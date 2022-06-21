@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/server.ts",
   "scripts": {
-    "dev": "NODE_ENV=DEV nodemon src/server.ts",
+    "dev": "NODE_ENV=DEV PORT=5555 nodemon -r dotenv/config src/server.ts",
     "prod": "NODE_ENV=PROD ts-node server.ts",
     "test": "mocha -r "
   },
@@ -20,10 +20,12 @@
   "license": "ISC",
   "dependencies": {
     "@types/cors": "^2.8.12",
+    "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.13",
     "@types/node": "^18.0.0",
     "@types/nodemon": "^1.19.1",
     "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "nodemon": "^2.0.16"
   }
