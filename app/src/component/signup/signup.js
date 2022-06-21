@@ -28,6 +28,9 @@ function Signup(){
                         <input />
                     </div>
                     <br />
+                    <div>
+                        <button>Signup</button>
+                    </div>
                 </form>
         </div>
     )
