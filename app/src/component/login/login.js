@@ -3,6 +3,9 @@ function Login(){
     return (
         <div className='login'>
               <form id='login-form'>
+                <div>
+                    <h2>Login</h2>
+                </div>
                     <div>
                         <label>Gmail-id : </label>
                         <input />

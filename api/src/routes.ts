@@ -5,7 +5,8 @@ import Signup from './handlers/signup'
 const router = express.Router()
 
 
-router.get('/',function(_req,res){
+router.post('/',function(_req,res){
+    console.log(_req.body)
     const defaultOkRes = {
         'status':200,
         'success':true,

@@ -34,4 +34,5 @@ input {
 
 button{
   cursor: pointer;
+  padding: 6px;
 }

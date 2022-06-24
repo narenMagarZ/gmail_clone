@@ -12,6 +12,7 @@
     border: var(--inborder);
     padding: 10px 20px;
     border-radius:10px ;
+    width: 15%;
 }
 #login-form > div {
     display: flex;

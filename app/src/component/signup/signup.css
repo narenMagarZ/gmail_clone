@@ -11,6 +11,7 @@
 #signup-form{
     border: var(--inborder);
     padding: 10px 20px;
+    width: 15%;
     border-radius:10px ;
 }
 #signup-form > div {
