@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react'
 import './signup.css'
 import {apiFetcher} from '../baseurl'
 function Signup(){
-    console.log(window.navigator.oscpu)
     let keyUpTimer = useRef(null)
     const [formData,setFormData] = useState({
         'userName':'',
@@ -12,15 +11,30 @@ function Signup(){
         'confirmPassword':''
     })
     async function Signup(e){
-        e.preventDefault()
-        const userInfo = {...formData,'userId':window.navigator.oscpu}
-        const response = await apiFetcher.post('/signup',userInfo)
-        console.log(response)
-        if(response.status === 200){
+        try{
 
-        }else {
-
+            e.preventDefault()
+            const userInfo = {...formData,'userId':window.navigator.oscpu}
+            const response = await apiFetcher.post('/signup',userInfo)
+            console.log(response.data)
+            const checkBox = document.getElementById('check-box')
+            if(response.data.status === 'true'){
+                checkBox.classList.add('ok-check-box')
+                setTimeout(()=>{
+                    checkBox.classList.remove('ok-check-box')
+                },2000)
+                checkBox.childNodes[0].innerHTML = "you successfully create account!"
+            } else {
+                checkBox.classList.add('error-check-box')
+                setTimeout(()=>{
+                    checkBox.classList.remove('error-check-box')
+                },2000)
+                checkBox.childNodes[0].innerHTML = response.data.msg
+            }
+        } catch(err){
+            console.error(err)
         }
+
     }
     function KeyUpHandler(e){
         clearTimeout(keyUpTimer.current)

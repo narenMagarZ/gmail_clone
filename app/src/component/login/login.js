@@ -1,15 +1,43 @@
-import {useEffect} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import './login.css'
+import { apiFetcher } from '../baseurl'
 function Login(){
-    function LoginForm(e){
+    
+    const keyUpTimer = useRef(null)
+    const [formData,setFormData] = useState({
+        'gmailId':'',
+        'password':''
+    }) 
+    async function LoginForm(e){
         e.preventDefault()
-
+        const userLoginInfo = {
+            ...formData,
+            'userId':window.navigator.oscpu
+        }
+        const response = await apiFetcher.post('/login',userLoginInfo)
+        console.log(response)
     }
-    function KeyUpHandler(){
 
+    function KeyUpHandler(e){
+        clearTimeout(keyUpTimer.current)
+        keyUpTimer.current = setTimeout(()=>{
+            if(e.target.value){                
+                setFormData((prevFormData)=>{
+                    prevFormData = {
+                        ...prevFormData,
+                        [e.target.name]:e.target.value,
+                    }
+                    return prevFormData
+                })
+            }
+        },400)
     }
     useEffect(()=>{
-        ['username-field','phonenum-field','gmail-id-field','password-field','confirm-password-field'].forEach((field)=>{
+        console.log(window.navigator)
+        console.log(formData)
+    },[formData])
+    useEffect(()=>{
+        ['gmail-field','password-field'].forEach((field)=>{
             if(document.getElementById(field)){
                 document.getElementById(field).addEventListener('keyup',KeyUpHandler)
             }

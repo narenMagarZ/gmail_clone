@@ -1,0 +1,17 @@
+#check-box{
+    padding:8px;
+    border-radius: 4px;
+    position: fixed;
+    right: 5px;
+    top: 80%;
+    overflow: hidden;
+    color: #ffffff;
+}
+
+.error-check-box{
+background-color: #ff0000;
+}
+
+.ok-check-box{
+    background-color: #34a89f;
+}

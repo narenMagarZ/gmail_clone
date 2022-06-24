@@ -29,19 +29,18 @@ async function Signup(req:Request,res:Response){
                 const test = await Users.insertMany([userInfoObj])
                 console.log(test)
                 res.json({
-                    status:200,
-                    msg:'okay'
+                    'msg':'okay',
+                    'status':'true'
                 })
             } else {
                 res.json({
-                    status:404,
                     msg:"password and confirm password do not match!"
                 })
             }
         } else {
             res.json({
-                status:404,
-                msg:'missing info fields!'
+                'msg':'missing info fields!',
+                'status':'false'
             })
         }
 
