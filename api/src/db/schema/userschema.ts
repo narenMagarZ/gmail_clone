@@ -7,11 +7,13 @@ const userSchema = new mongoose.Schema({
     },
     phonenum:{
         type:String,
-        require:true
+        require:true,
+        unique:true
     },
     gmail:{
         type:String,
-        require:true
+        require:true,
+        unique:true
     },
     password:{
         type:String,

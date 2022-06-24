@@ -3,7 +3,6 @@ import {Users} from '../db/schema/userschema'
 import { helpers } from '../helpers/helpers'
 async function Signup(req:Request,res:Response){
     try {
-        console.log(req.body)
         let {userName,phoneNum,gmailId,password,confirmPassword,userId} = req.body
         userName = userName.trim()
         phoneNum = phoneNum.trim()
@@ -25,7 +24,6 @@ async function Signup(req:Request,res:Response){
                     }]
             
                 }
-                console.log(userInfoObj)
                 const test = await Users.insertMany([userInfoObj])
                 console.log(test)
                 res.json({
@@ -34,7 +32,8 @@ async function Signup(req:Request,res:Response){
                 })
             } else {
                 res.json({
-                    msg:"password and confirm password do not match!"
+                    'msg':"password and confirm password do not match!",
+                    'status':'false'
                 })
             }
         } else {
@@ -46,6 +45,12 @@ async function Signup(req:Request,res:Response){
 
     } catch (err) {
         console.error(err)
+        res.json({
+            'msg':"something wrong happened!",
+            'status':'false'
+        })
+
+
     }
 
     

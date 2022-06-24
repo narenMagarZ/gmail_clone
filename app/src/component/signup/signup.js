@@ -12,11 +12,9 @@ function Signup(){
     })
     async function Signup(e){
         try{
-
             e.preventDefault()
             const userInfo = {...formData,'userId':window.navigator.oscpu}
             const response = await apiFetcher.post('/signup',userInfo)
-            console.log(response.data)
             const checkBox = document.getElementById('check-box')
             if(response.data.status === 'true'){
                 checkBox.classList.add('ok-check-box')
