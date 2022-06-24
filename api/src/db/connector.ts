@@ -1,7 +1,7 @@
 import mongoose from "mongoose"
 
 function CreateConnctionToMongo(host?:string,port?:string){
-        const MONGOURI = `mongodb://${host}:${port}`
+        const MONGOURI = `mongodb://${host}:${port}/test`
         const connection = mongoose.createConnection(MONGOURI)
         return connection
 }

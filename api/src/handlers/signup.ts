@@ -1,5 +1,54 @@
 import {Request,Response} from 'express'
-function Signup(req:Request,res:Response){
+import {Users} from '../db/schema/userschema'
+import { helpers } from '../helpers/helpers'
+async function Signup(req:Request,res:Response){
+    try {
+        console.log(req.body)
+        let {userName,phoneNum,gmailId,password,confirmPassword,userId} = req.body
+        userName = userName.trim()
+        phoneNum = phoneNum.trim()
+        gmailId = gmailId.trim()
+        password = password.trim()
+        confirmPassword = confirmPassword.trim()
+        userId = userId.trim()
+        if(userName && phoneNum && gmailId && password && confirmPassword && userId){
+            if(password === confirmPassword){
+                const securePassword = helpers.GenerateSecurePassword(password)
+                const userInfoObj = {
+                    'username' : userName,
+                    'phonenum' : phoneNum,
+                    'gmail' : gmailId,
+                    'password' : securePassword,
+                    'isActive' : true,
+                    'loggedInDevices' : [{
+                        'deviceId' : userId
+                    }]
+            
+                }
+                console.log(userInfoObj)
+                const test = await Users.insertMany([userInfoObj])
+                console.log(test)
+                res.json({
+                    status:200,
+                    msg:'okay'
+                })
+            } else {
+                res.json({
+                    status:404,
+                    msg:"password and confirm password do not match!"
+                })
+            }
+        } else {
+            res.json({
+                status:404,
+                msg:'missing info fields!'
+            })
+        }
 
+    } catch (err) {
+        console.error(err)
+    }
+
+    
 }
 export default Signup

@@ -2,7 +2,6 @@ import express, { Application } from 'express'
 import cors, { CorsOptions } from 'cors'
 import router from './routes'
 import config from '../config'
-
 function CreateServer():Application{
     const app = express()
     app.use(express.urlencoded({extended:false})) // it is used to parses the url encoded , having extend as true use the qs library to parse and having false use querystring library

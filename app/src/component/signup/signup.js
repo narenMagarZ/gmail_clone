@@ -2,24 +2,25 @@ import { useEffect, useRef, useState } from 'react'
 import './signup.css'
 import {apiFetcher} from '../baseurl'
 function Signup(){
-    
+    console.log(window.navigator.oscpu)
     let keyUpTimer = useRef(null)
     const [formData,setFormData] = useState({
-        'username':'',
-        'phonenum':'',
-        'gmailid':'',
+        'userName':'',
+        'phoneNum':'',
+        'gmailId':'',
         'password':'',
-        'confirmpassword':''
+        'confirmPassword':''
     })
     async function Signup(e){
         e.preventDefault()
-        const response = await apiFetcher.post('/',formData)
+        const userInfo = {...formData,'userId':window.navigator.oscpu}
+        const response = await apiFetcher.post('/signup',userInfo)
+        console.log(response)
         if(response.status === 200){
 
         }else {
-            
+
         }
-        console.log(response)
     }
     function KeyUpHandler(e){
         clearTimeout(keyUpTimer.current)
@@ -53,17 +54,17 @@ function Signup(){
                     </div>
                     <div>
                         <label>Username : </label>
-                        <input name='username' id='username-field' />
+                        <input name='userName' id='username-field' />
                     </div>
                     <br/>
                     <div>
                         <label>Phone-num : </label>
-                        <input name='phonenum' id='phonenum-field' />
+                        <input name='phoneNum' id='phonenum-field' />
                     </div>
                     <br />
                     <div>
                         <label>Gmail-id : </label>
-                        <input name='gmailid' id='gmail-id-field' />
+                        <input name='gmailId' id='gmail-id-field' />
                     </div>
                     <br />
                     <div>
@@ -73,7 +74,7 @@ function Signup(){
                     <br />
                     <div>
                         <label>Confirm-password : </label>
-                        <input name='confirmpassword' id='confirm-password-field' />
+                        <input name='confirmPassword' id='confirm-password-field' />
                     </div>
                     <br />
                     <div>
