@@ -8,5 +8,5 @@ const router = express.Router()
 
 router.post('/signup',Signup)
 router.post('/login',Login)
-router.get('/emails',Email)
+router.get('/gmails',Email)
 export default router

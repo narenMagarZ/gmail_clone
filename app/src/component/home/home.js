@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { apiFetcher } from "../baseurl";
-
-
 function Home(){
     useEffect(()=>{
-        apiFetcher.get('/emails').then(res=>{
+        console.log(document.cookie)
+        const cookie = 'naren@gmail.com'
+        apiFetcher.get(`/gmails?id=${cookie}`).then(res=>{
             console.log(res)
         })
     })
