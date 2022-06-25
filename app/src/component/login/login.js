@@ -2,7 +2,7 @@ import {useEffect, useRef, useState} from 'react'
 import './login.css'
 import { apiFetcher } from '../baseurl'
 function Login(){
-    
+
     const keyUpTimer = useRef(null)
     const [formData,setFormData] = useState({
         'gmailId':'',
@@ -10,9 +10,14 @@ function Login(){
     }) 
     async function LoginForm(e){
         e.preventDefault()
+        let platformContent
+        await require(['platform'], function(platform) {
+            platformContent = platform
+        });
         const userLoginInfo = {
             ...formData,
-            'userId':window.navigator.oscpu
+            'platformId':platformContent.os.family,
+            'appId':platformContent.name
         }
         const checkBox = document.getElementById('check-box')
         let activeCheckBox = ''
@@ -31,6 +36,7 @@ function Login(){
             console.log(err)
         })
         setTimeout(()=>{
+            if(checkBox)
             checkBox.classList.remove(activeCheckBox)
         },2000)
     }
@@ -47,10 +53,9 @@ function Login(){
                     return prevFormData
                 })
             }
-        },400)
+        },200)
     }
     useEffect(()=>{
-        console.log(window.navigator)
         console.log(formData)
     },[formData])
     useEffect(()=>{

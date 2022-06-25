@@ -1,11 +1,13 @@
 import express, { Application } from 'express'
 import cors, { CorsOptions } from 'cors'
+import cookieParser from 'cookie-parser'
 import router from './routes'
 import config from '../config'
 function CreateServer():Application{
     const app = express()
     app.use(express.urlencoded({extended:false})) // it is used to parses the url encoded , having extend as true use the qs library to parse and having false use querystring library
     app.use(express.json())
+    app.use(cookieParser(process.env.COOKIE_SECRET))
     const whiteList = ['http://localhost:3000','https://localhost:3000']
     app.use(cors((req,callback)=>{
         let corsOption : CorsOptions

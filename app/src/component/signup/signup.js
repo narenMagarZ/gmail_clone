@@ -29,10 +29,9 @@ function Signup(){
                 console.error(err)
             })
             setTimeout(()=>{
+                if(checkBox)
                 checkBox.classList.remove(activeCheckBox)
             },2000)
-
-
     }
     function KeyUpHandler(e){
         clearTimeout(keyUpTimer.current)
@@ -46,7 +45,7 @@ function Signup(){
                     return prevFormData
                 })
             }
-        },400)
+        },200)
     }
     useEffect(()=>{
         console.log(formData)

@@ -1,19 +1,40 @@
 import {Request,Response} from 'express'
-import { helpers } from '../helpers/helpers'
+import { helpers } from '../helpers'
 import {Users} from '../db/schema/userschema'
+import jwt from 'jsonwebtoken'
+import {redis} from '../cacheserver'
 async function Login(req:Request,res:Response){
     try{
-        let {gmailId,password,userId} = req.body
-        gmailId = gmailId.trim()
-        password = password.trim()
-        userId = userId.trim()
-        if(gmailId && password && userId){
+        let {gmailId,password,platformId,appId} = req.body
+        if(gmailId && password && platformId && appId){
+            gmailId = gmailId.trim()
+            password = password.trim()
+            platformId = platformId.trim()
+            appId = appId.trim()
             const hashedPassword = helpers.GenerateSecurePassword(password)
             const thatUser = await Users.find({'gmail':gmailId})
             if(thatUser.length > 0){
                 console.log(thatUser[0])
                 const securedPassword = thatUser[0].password
                 if(securedPassword === hashedPassword){
+                    const userInfoToken = {
+                        'id' : thatUser[0].gmail,
+                        'appId' : appId,
+                        'platform': platformId,
+                    }
+                    let thatToken = await redis.hget('RefreshTokens',thatUser[0].gmail)
+                    console.log(thatToken)
+                    let refreshToken
+                    if(thatToken){
+                        refreshToken = thatToken.trim()
+                    } else {
+                        refreshToken = jwt.sign(userInfoToken,process.env.REFRESH_TOKEN_SECRET || '',{expiresIn:"30 days"})
+                        redis.hset('RefreshTokens',thatUser[0].gmail,refreshToken)
+                    }
+                    const accessToken = jwt.sign(userInfoToken,process.env.ACCESS_TOKEN_SECRET || '',{expiresIn:"40000"})
+                    const tokenKey = jwt.sign({'platform':platformId,'appId':appId},process.env.TOKEN_KEY_SECRET || '',{expiresIn:'40000'})
+                    res.cookie('gid',accessToken,{signed:true,httpOnly:true,sameSite:'strict',secure:true})
+                    res.cookie('key',tokenKey,{signed:true,httpOnly:true,sameSite:'strict',secure:true})
                     res.json({
                         'msg':'you are logged in!',
                         'status':true

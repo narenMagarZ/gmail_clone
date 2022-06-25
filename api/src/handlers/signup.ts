@@ -1,6 +1,6 @@
 import {Request,Response} from 'express'
 import {Users} from '../db/schema/userschema'
-import { helpers } from '../helpers/helpers'
+import { helpers } from '../helpers'
 async function Signup(req:Request,res:Response){
     try {
         let {userName,phoneNum,gmailId,password,confirmPassword,userId} = req.body
