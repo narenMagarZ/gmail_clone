@@ -14,8 +14,25 @@ function Login(){
             ...formData,
             'userId':window.navigator.oscpu
         }
-        const response = await apiFetcher.post('/login',userLoginInfo)
-        console.log(response)
+        const checkBox = document.getElementById('check-box')
+        let activeCheckBox = ''
+        apiFetcher.post('/login',userLoginInfo).then(res=>{
+            console.log(res.data.status)
+            if(res.data.status === true){
+                checkBox.classList.add('ok-check-box')
+                activeCheckBox = 'ok-check-box'
+                checkBox.childNodes[0].innerHTML = res.data.msg
+            } else {
+                checkBox.classList.add('error-check-box')
+                activeCheckBox = 'error-check-box'
+                checkBox.childNodes[0].innerHTML = res.data.msg
+            }
+        }).catch(err=>{
+            console.log(err)
+        })
+        setTimeout(()=>{
+            checkBox.classList.remove(activeCheckBox)
+        },2000)
     }
 
     function KeyUpHandler(e){

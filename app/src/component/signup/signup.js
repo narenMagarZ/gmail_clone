@@ -11,27 +11,27 @@ function Signup(){
         'confirmPassword':''
     })
     async function Signup(e){
-        try{
             e.preventDefault()
-            const userInfo = {...formData,'userId':window.navigator.oscpu}
-            const response = await apiFetcher.post('/signup',userInfo)
             const checkBox = document.getElementById('check-box')
-            if(response.data.status === 'true'){
-                checkBox.classList.add('ok-check-box')
-                setTimeout(()=>{
-                    checkBox.classList.remove('ok-check-box')
-                },2000)
-                checkBox.childNodes[0].innerHTML = "you successfully create account!"
-            } else {
-                checkBox.classList.add('error-check-box')
-                setTimeout(()=>{
-                    checkBox.classList.remove('error-check-box')
-                },2000)
-                checkBox.childNodes[0].innerHTML = response.data.msg
-            }
-        } catch(err){
-            console.error(err)
-        }
+            let activeCheckBox = ''
+            const userInfo = {...formData,'userId':window.navigator.oscpu}
+            apiFetcher.post('/signup',userInfo).then(res=>{
+                if(res.data.status === true){
+                    checkBox.classList.add('ok-check-box')
+                    activeCheckBox = 'ok-check-box'
+                    checkBox.childNodes[0].innerHTML = res.data.msg
+                } else {
+                    checkBox.classList.add('error-check-box')
+                    activeCheckBox = 'error-check-box'
+                    checkBox.childNodes[0].innerHTML = res.data.msg
+                }
+            }).catch(err=>{
+                console.error(err)
+            })
+            setTimeout(()=>{
+                checkBox.classList.remove(activeCheckBox)
+            },2000)
+
 
     }
     function KeyUpHandler(e){

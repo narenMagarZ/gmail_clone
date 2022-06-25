@@ -27,19 +27,19 @@ async function Signup(req:Request,res:Response){
                 const test = await Users.insertMany([userInfoObj])
                 console.log(test)
                 res.json({
-                    'msg':'okay',
-                    'status':'true'
+                    'msg':'successfully created account',
+                    'status':true
                 })
             } else {
                 res.json({
                     'msg':"password and confirm password do not match!",
-                    'status':'false'
+                    'status':false
                 })
             }
         } else {
             res.json({
                 'msg':'missing info fields!',
-                'status':'false'
+                'status':false
             })
         }
 
@@ -47,7 +47,7 @@ async function Signup(req:Request,res:Response){
         console.error(err)
         res.json({
             'msg':"something wrong happened!",
-            'status':'false'
+            'status':false
         })
 
 
