@@ -20,17 +20,22 @@ async function Login(req:Request,res:Response){
                     const tokenInfo = {
                         'id' : thatUser[0].gmail,
                     }
+                    const tokenKeyInfo = {
+                        'platform' : platformId,
+                        'appId' : appId,
+                        'id' : thatUser[0].gmail
+                    }
                     let thatToken = await redis.hget('RefreshTokens',thatUser[0].gmail)
                     console.log(thatToken)
                     let refreshToken
                     if(thatToken){
                         refreshToken = thatToken.trim()
                     } else {
-                        refreshToken = jwt.sign(tokenInfo,process.env.REFRESH_TOKEN_SECRET || '',{expiresIn:"30 days"})
                         redis.hset('RefreshTokens',thatUser[0].gmail,refreshToken)
+                        refreshToken = jwt.sign(tokenInfo,process.env.REFRESH_TOKEN_SECRET || '',{expiresIn:"30 days"})
                     }
                     const accessToken = jwt.sign(tokenInfo,process.env.ACCESS_TOKEN_SECRET || '',{expiresIn:"40000"})
-                    const accessTokenKey = jwt.sign({'platform':platformId,'appId':appId,'uid':thatUser[0].gmail},process.env.TOKEN_KEY_SECRET || '',{expiresIn:'30 days'})
+                    const accessTokenKey = jwt.sign(tokenKeyInfo,process.env.TOKEN_KEY_SECRET || '',{expiresIn:'30 days'})
                     res.cookie('gid',accessToken,{signed:true,httpOnly:true,sameSite:'strict',secure:true})
                     res.cookie('key',accessTokenKey,{signed:true,httpOnly:true,sameSite:'strict',secure:true})
                     res.json({

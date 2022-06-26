@@ -2,7 +2,10 @@ import mongoose from 'mongoose'
 import { mongodbConnector } from '..'
 
 const emailSchema = new mongoose.Schema({
-    parentRef : mongoose.Types.ObjectId,
+    mailComposer :{
+        types : mongoose.Schema.Types.ObjectId,
+        ref : 'Users'
+    },
     from :{
         type:String,
         require:true

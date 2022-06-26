@@ -3,12 +3,14 @@ import jwt from 'jsonwebtoken'
 interface helpers {
     GenerateSecurePassword:(plainPassword:string)=>void
     GenerateAccessToken:(userInfo:{})=>void
-    GenerateAccessTokenKey:(platformId:string,appId:string)=>void
+    GenerateAccessTokenKey:(platformId:string,appId:string)=>void,
+    GenerateUniqueId:()=>void
 }
 export const helpers : helpers = {
     'GenerateSecurePassword' : ()=>{},
     'GenerateAccessToken' : ()=>{},
-    'GenerateAccessTokenKey' : ()=>{}
+    'GenerateAccessTokenKey' : ()=>{},
+    'GenerateUniqueId' : ()=>{}
 }
 
 helpers.GenerateSecurePassword = function(plainPassword:string){
@@ -27,4 +29,8 @@ helpers.GenerateAccessToken = function(userInfo){
 helpers.GenerateAccessTokenKey = function(platformId:string,appId:string){
     const accessTokenKey = jwt.sign({'platform':platformId,'appId':appId},process.env.TOKEN_KEY_SECRET || '',{expiresIn:'40000'})
     return accessTokenKey
+}
+
+helpers.GenerateUniqueId = function(){
+
 }
