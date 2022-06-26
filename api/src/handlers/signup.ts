@@ -18,10 +18,7 @@ async function Signup(req:Request,res:Response){
                     'phonenum' : phoneNum,
                     'gmail' : gmailId,
                     'password' : securePassword,
-                    'isActive' : true,
-                    'loggedInDevices' : [{
-                        'deviceId' : userId
-                    }]
+                    'isActive' : true
             
                 }
                 const test = await Users.insertMany([userInfoObj])

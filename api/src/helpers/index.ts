@@ -2,11 +2,13 @@ import {createHmac} from 'node:crypto'
 import jwt from 'jsonwebtoken'
 interface helpers {
     GenerateSecurePassword:(plainPassword:string)=>void
-    GenerateAccessToken:()=>void
+    GenerateAccessToken:(userInfo:{})=>void
+    GenerateAccessTokenKey:(platformId:string,appId:string)=>void
 }
 export const helpers : helpers = {
     'GenerateSecurePassword' : ()=>{},
-    'GenerateAccessToken' : ()=>{}
+    'GenerateAccessToken' : ()=>{},
+    'GenerateAccessTokenKey' : ()=>{}
 }
 
 helpers.GenerateSecurePassword = function(plainPassword:string){
@@ -16,7 +18,13 @@ helpers.GenerateSecurePassword = function(plainPassword:string){
 }
 
 
-helpers.GenerateAccessToken = function(){
-
+helpers.GenerateAccessToken = function(userInfo){
+    const accessToken = jwt.sign(userInfo,process.env.ACCESS_TOKEN_SECRET || '',{expiresIn:"40000"})
+    return accessToken
 }
 
+
+helpers.GenerateAccessTokenKey = function(platformId:string,appId:string){
+    const accessTokenKey = jwt.sign({'platform':platformId,'appId':appId},process.env.TOKEN_KEY_SECRET || '',{expiresIn:'40000'})
+    return accessTokenKey
+}

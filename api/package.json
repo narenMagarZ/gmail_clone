@@ -19,7 +19,7 @@
   "author": "naren magar",
   "license": "ISC",
   "dependencies": {
-    "@types/cookie": "^0.5.1",
+    "@types/async": "^3.2.13",
     "@types/cookie-parser": "^1.4.3",
     "@types/cors": "^2.8.12",
     "@types/dotenv": "^8.2.0",
@@ -29,7 +29,7 @@
     "@types/mongoose": "^5.11.97",
     "@types/node": "^18.0.0",
     "@types/nodemon": "^1.19.1",
-    "cookie": "^0.5.0",
+    "async": "^3.2.4",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",

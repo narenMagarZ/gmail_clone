@@ -17,10 +17,8 @@ async function Login(req:Request,res:Response){
                 console.log(thatUser[0])
                 const securedPassword = thatUser[0].password
                 if(securedPassword === hashedPassword){
-                    const userInfoToken = {
+                    const tokenInfo = {
                         'id' : thatUser[0].gmail,
-                        'appId' : appId,
-                        'platform': platformId,
                     }
                     let thatToken = await redis.hget('RefreshTokens',thatUser[0].gmail)
                     console.log(thatToken)
@@ -28,13 +26,13 @@ async function Login(req:Request,res:Response){
                     if(thatToken){
                         refreshToken = thatToken.trim()
                     } else {
-                        refreshToken = jwt.sign(userInfoToken,process.env.REFRESH_TOKEN_SECRET || '',{expiresIn:"30 days"})
+                        refreshToken = jwt.sign(tokenInfo,process.env.REFRESH_TOKEN_SECRET || '',{expiresIn:"30 days"})
                         redis.hset('RefreshTokens',thatUser[0].gmail,refreshToken)
                     }
-                    const accessToken = jwt.sign(userInfoToken,process.env.ACCESS_TOKEN_SECRET || '',{expiresIn:"40000"})
-                    const tokenKey = jwt.sign({'platform':platformId,'appId':appId},process.env.TOKEN_KEY_SECRET || '',{expiresIn:'40000'})
+                    const accessToken = jwt.sign(tokenInfo,process.env.ACCESS_TOKEN_SECRET || '',{expiresIn:"40000"})
+                    const accessTokenKey = jwt.sign({'platform':platformId,'appId':appId,'uid':thatUser[0].gmail},process.env.TOKEN_KEY_SECRET || '',{expiresIn:'30 days'})
                     res.cookie('gid',accessToken,{signed:true,httpOnly:true,sameSite:'strict',secure:true})
-                    res.cookie('key',tokenKey,{signed:true,httpOnly:true,sameSite:'strict',secure:true})
+                    res.cookie('key',accessTokenKey,{signed:true,httpOnly:true,sameSite:'strict',secure:true})
                     res.json({
                         'msg':'you are logged in!',
                         'status':true

@@ -1,5 +1,5 @@
 import mongoose from "mongoose"
-import { mongodbConnector } from "../connector"
+import { mongodbConnector } from ".."
 const userSchema = new mongoose.Schema({
     username:{
         type:String,
