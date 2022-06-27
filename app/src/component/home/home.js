@@ -1,5 +1,7 @@
 import { useEffect } from "react";
+import './home.css'
 import { apiFetcher } from "../baseurl";
+import ComposeMail from "./ composemail";
 function Home(){
 
     useEffect(()=>{
@@ -22,8 +24,8 @@ function Home(){
         fun()
     })
     return(
-        <div>
-
+        <div className="home-wrapper">
+            <ComposeMail />
         </div>
     )
 }
