@@ -28,11 +28,11 @@ async function Login(req:Request,res:Response){
                     let thatToken = await redis.hget('RefreshTokens',thatUser[0].gmail)
                     console.log(thatToken)
                     let refreshToken
-                    if(thatToken){
+                    if(thatToken && thatToken !== ''){
                         refreshToken = thatToken.trim()
                     } else {
-                        redis.hset('RefreshTokens',thatUser[0].gmail,refreshToken)
                         refreshToken = jwt.sign(tokenInfo,process.env.REFRESH_TOKEN_SECRET || '',{expiresIn:"30 days"})
+                        redis.hset('RefreshTokens',thatUser[0].gmail,refreshToken)
                     }
                     const accessToken = jwt.sign(tokenInfo,process.env.ACCESS_TOKEN_SECRET || '',{expiresIn:"40000"})
                     const accessTokenKey = jwt.sign(tokenKeyInfo,process.env.TOKEN_KEY_SECRET || '',{expiresIn:'30 days'})

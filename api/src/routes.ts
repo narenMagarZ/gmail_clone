@@ -1,13 +1,10 @@
 import express from 'express'
-import Email from './handlers/emails'
-import Login from './handlers/login'
-import Signup from './handlers/signup'
-
+import { handlers } from './handlers'
 const router = express.Router()
 
 
-router.post('/signup',Signup)
-router.post('/login',Login)
-router.get('/gmails',Email)
-router.post('/writegmail')
+router.post('/signup',handlers.Signup)
+router.post('/login',handlers.Login)
+router.get('/emails',handlers.Email)
+router.post('/composemail',handlers.ComposeMail)
 export default router

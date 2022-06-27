@@ -1,4 +1,4 @@
-import express, { Application } from 'express'
+import express, { Application, NextFunction , Request, Response } from 'express'
 import cors, { CorsOptions } from 'cors'
 import cookieParser from 'cookie-parser'
 import router from './routes'
@@ -25,9 +25,20 @@ function CreateServer():Application{
         callback(null,corsOption)
     }))
     app.use('/api',router)
+    app.use((err:Error,_req:Request,res:Response,next:NextFunction)=>{
+        console.log(err,'this is error')
+        res.json({
+          'msg':err.message,
+          'status':500  
+        })
+    })
     app.listen(config.port,function(){
         console.log('server is running on port',config.port)
     })
+
+    // process.on('unhandledRejection',(rejection)=>{
+    //     console.error(rejection)
+    // })
     return app
 }
 

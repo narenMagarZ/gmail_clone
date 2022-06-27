@@ -25,7 +25,6 @@ async function Email(req:Request,res:Response){
                         else resolve({'isError':false,'content':decodedContent})
                      })})
                 const checkerResolved : any = await Promise.all([gidChecker,keyChecker])
-                console.log(checkerResolved)
                 if(checkerResolved[0].isError && !checkerResolved[1].isError){
                     if(checkerResolved[0].msg === 'jwt expired'){
                         const {id,platform,appId} = checkerResolved[1].content
@@ -33,13 +32,14 @@ async function Email(req:Request,res:Response){
                                  // if platform and appid is matched
                                 const refreshToken = await redis.hget("RefreshTokens",id)
                                 if(refreshToken){
-                                   const refreshTokenValidity = await new Promise(resolve=>{
+                                   const refreshTokenValidity : any = await new Promise(resolve=>{
                                     jwt.verify(refreshToken,process.env.REFRESH_TOKEN_SECRET || '',(err,content)=>{
                                         if(err) resolve({isError:true})
                                         else resolve({isError:false})
                                     })
                                    })
-                                   if(refreshTokenValidity){
+                                   console.log(refreshTokenValidity,'this is refreshtoken validtity')
+                                   if(refreshTokenValidity.isError){
                                     resObj = {
                                         'msg' : 'your session is expired',
                                         'status' : false
@@ -53,6 +53,7 @@ async function Email(req:Request,res:Response){
                                            'status' : true,
                                            'msg' : 'your emails are listed below'
                                        }
+                                       res.json(resObj)
                                    }
                                 } else {
                                     resObj = {
@@ -67,6 +68,7 @@ async function Email(req:Request,res:Response){
                                     'status' : false,
                                     'msg' : 'not authenticated user'
                                 }
+                                res.json(resObj)
                             }
                     } else {
                         resObj = {
