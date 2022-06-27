@@ -12,7 +12,7 @@ function Home(){
                 await require(['platform'], function(platform) {
                     platformContent = platform
                 });
-                apiFetcher.get(`/gmails?id=${cookie}`,{
+                apiFetcher.get(`/emails?id=${cookie}`,{
                     headers:{
                         'platform':platformContent.os.family,
                         'appId':platformContent.name

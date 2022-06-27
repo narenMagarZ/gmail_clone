@@ -1,45 +1,22 @@
-.compose-mail-wrapper{
-    position: fixed;
-    bottom: 0;
-    right: 20px;
-    border: var(--inborder);
-    border-radius: 4px;
-    min-height: 50px;
-    min-width: 100px;
-    height: 500px;
-    width: 500px;
-}
-
-.compose-mail-headbar{
-    padding: 5px;
-    border: none;
-    border-bottom: 1px solid #292929;
-}
-#cmp-mail-in-body-wrapper{
-    padding: 4px 8px;
-}
 
 textarea{
     resize: none;
     width: 100%;
-    height: 100%;
     box-sizing: border-box;
     outline: none;
     border: none;
     padding:10px 5px;
-}
-#receiver-wrapper{
-    width: 100%;
-}
-#receiver-wrapper > input {
+    line-height: 24px;
+    height: 300px;
+    max-height: 400px;
 
 }
 
-.compose-mail-wrapper >div >div > input {
-    width: 100%;
-    padding: 5px;
-    box-sizing: border-box;
-    border: none;
-    border-bottom: 1px solid #d6d6d6;
-    border-radius: 0;
+#subject-wrapper > input , #title-wrapper > input{
+    width:100%;
+    padding:5px;
+    box-sizing:border-box;
+    border:none;
+    border-bottom:1px solid #d6d6d6;
+    border-radius:0;
 }
