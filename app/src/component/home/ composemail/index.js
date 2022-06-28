@@ -28,7 +28,8 @@ function ComposeMail(){
             const response = await apiFetcher.post('/composemail',mailContent,{
                 headers:{
                     'platform':platformContent.os.family,
-                    'appid':platformContent.name
+                    'appid':platformContent.name,
+                    'deviceid' : 'browser'
                 }
             })
             console.log(response)

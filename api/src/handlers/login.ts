@@ -34,10 +34,10 @@ async function Login(req:Request,res:Response){
                         refreshToken = jwt.sign(tokenInfo,process.env.REFRESH_TOKEN_SECRET || '',{expiresIn:"30 days"})
                         redis.hset('RefreshTokens',thatUser[0].gmail,refreshToken)
                     }
-                    const accessToken = jwt.sign(tokenInfo,process.env.ACCESS_TOKEN_SECRET || '',{expiresIn:"40000"})
+                    const accessToken = jwt.sign(tokenInfo,process.env.ACCESS_TOKEN_SECRET || '',{expiresIn:"3000s"})
                     const accessTokenKey = jwt.sign(tokenKeyInfo,process.env.TOKEN_KEY_SECRET || '',{expiresIn:'30 days'})
-                    res.cookie('gid',accessToken,{signed:true,httpOnly:true,sameSite:'strict',secure:true})
-                    res.cookie('key',accessTokenKey,{signed:true,httpOnly:true,sameSite:'strict',secure:true})
+                    res.cookie('uid',accessToken,{signed:true,httpOnly:true,sameSite:'strict',secure:true})
+                    res.cookie('uidkey',accessTokenKey,{signed:true,httpOnly:true,sameSite:'strict',secure:true})
                     res.json({
                         'msg':'you are logged in!',
                         'status':true

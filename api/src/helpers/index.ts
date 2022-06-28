@@ -7,13 +7,15 @@ interface helpers {
     GenerateAccessTokenKey:(platformId:string,appId:string)=>void,
     GenerateUniqueId:()=>void
     IsUserValid:(Users:mongoose.Model<any>,gmail:string)=>Promise<boolean>
+    VerifyTheToken:(token:string,secretKey:string)=>Promise<[boolean,any]>
 }
 export const helpers : helpers = {
     'GenerateSecurePassword' : ()=>{},
     'GenerateAccessToken' : ()=>{},
     'GenerateAccessTokenKey' : ()=>{},
     'GenerateUniqueId' : ()=>{},
-    'IsUserValid':async()=>false
+    'IsUserValid':async()=>false,
+    'VerifyTheToken':async()=>[false,null]
 }
 
 helpers.GenerateSecurePassword = function(plainPassword:string){
@@ -41,7 +43,15 @@ helpers.GenerateUniqueId = function(){
 
 helpers.IsUserValid = async function(Users:mongoose.Model<any>,gmail:string){
     const userInfo = await Users.findOne({'gmail':gmail})
-    console.log(userInfo)
     if(userInfo) return true
     else return false
+}
+
+helpers.VerifyTheToken = function(token:string,secretKey:string){
+    return new Promise((resolve)=>{
+        jwt.verify(token,secretKey,(err:any,decodeContent:any)=>{
+            if(err) resolve([true,err.message])
+            else resolve([false,decodeContent])
+        })
+    })
 }
