@@ -34,7 +34,7 @@ async function Login(req:Request,res:Response){
                         refreshToken = jwt.sign(tokenInfo,process.env.REFRESH_TOKEN_SECRET || '',{expiresIn:"30 days"})
                         redis.hset('RefreshTokens',thatUser[0].gmail,refreshToken)
                     }
-                    const accessToken = jwt.sign(tokenInfo,process.env.ACCESS_TOKEN_SECRET || '',{expiresIn:"60s"})
+                    const accessToken = jwt.sign(tokenInfo,process.env.ACCESS_TOKEN_SECRET || '',{expiresIn:"2000s"})
                     const accessTokenKey = jwt.sign(tokenKeyInfo,process.env.TOKEN_KEY_SECRET || '',{expiresIn:'30 days'})
                     res.cookie('uid',accessToken,{signed:true,httpOnly:true,sameSite:'strict',secure:true})
                     res.cookie('uidkey',accessTokenKey,{signed:true,httpOnly:true,sameSite:'strict',secure:true})

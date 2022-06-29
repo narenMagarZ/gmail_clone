@@ -9,6 +9,10 @@ function CreateServer():Application{
     app.use(express.json())
     app.use(cookieParser(process.env.COOKIE_SECRET))
     const whiteList = ['http://localhost:3000','https://localhost:3000']
+    app.use((req,res,next)=>{
+        console.log(req.url,req.method,req.headers)
+        next()
+    })
     app.use(cors((req,callback)=>{
         let corsOption : CorsOptions
         if(whiteList.indexOf(req.header('Origin')||'') !== -1){

@@ -29,7 +29,7 @@ helpers.GenerateSecurePassword = function(plainPassword:string){
 
 
 helpers.GenerateAccessToken = function(userInfo){
-    const accessToken = jwt.sign(userInfo,process.env.ACCESS_TOKEN_SECRET || '',{expiresIn:"40000"})
+    const accessToken = jwt.sign(userInfo,process.env.ACCESS_TOKEN_SECRET || '',{expiresIn:"2000s"})
     return accessToken
 }
 
