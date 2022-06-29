@@ -54,11 +54,11 @@ async function ComposeMail(req:Request,res:Response,next:NextFunction){
             } else {
                 console.log(tokenInfoAfterVerification)
                 const {tokenInfo} = tokenInfoAfterVerification
+                const idInKey = tokenInfo?.tokenkey.id
+                const platformInKey = tokenInfo?.tokenkey.platform
+                const appIdInKey = tokenInfo?.tokenkey.appId
                 if(tokenInfo?.accesstoken){
                     const {id} = tokenInfo.accesstoken
-                    const idInKey = tokenInfo.tokenkey.id
-                    const platformInKey = tokenInfo.tokenkey.platform
-                    const appIdInKey = tokenInfo.tokenkey.appId
                     if((id === idInKey) && (platform === platformInKey) && (appId === appIdInKey)){
                        const refreshToken = await redis.hget('RefreshTokens',id)
                        if(refreshToken){
@@ -77,65 +77,70 @@ async function ComposeMail(req:Request,res:Response,next:NextFunction){
                                     } else {
                                         // check for the existence of the user in main database
                                         async function* generator(){
-                                            if(!checkForExistenceOfUsers[0][1]) yield helpers.IsUserValid(Users,userId) 
+                                            if(!checkForExistenceOfUsers[0][1]) yield helpers.IsUserExistInDB(Users,userId) 
                                             else yield true
-                                            if(!checkForExistenceOfUsers[1][1]) yield helpers.IsUserValid(Users,mailReceiver.trim())
+                                            if(!checkForExistenceOfUsers[1][1]) yield helpers.IsUserExistInDB(Users,mailReceiver.trim())
                                             else yield true
                                         }
+                                            let generatorPointer = 0
+                                            let userToStoredInCache = [userId,mailReceiver.trim()]
+                                            let areUsersValidOnDatabase = [false,false]
                                             for await(const isUserExist of generator()){
-                                                console.log(isUserExist)
-                                                
+                                                areUsersValidOnDatabase[generatorPointer] = isUserExist
+                                                if(isUserExist && !checkForExistenceOfUsers[generatorPointer][1]) {
+                                                    redis.hset('Users',userToStoredInCache[generatorPointer],1)
+                                                }
+                                                generatorPointer ++
                                             }
-                                            return res.json({
-                                                'msg':"generators is executed"
-                                            })
+                                            userToStoredInCache = []
+                                            // write the email to the database
+                                            if(areUsersValidOnDatabase[0] && areUsersValidOnDatabase[1]){
+                                                return res.json({
+                                                    'msg':"generators is executed"
+                                                })
+                                            } else return next(new Error('no users are found'))
                                     }   
                                 } else return next(new Error('no authenticated user'))
                                 }
                        } else return next(new Error('your session is already expired'))
                     } else return next(new Error('no authenticated user'))
                 } else {
+                    // generate the new accesstoken
+                    const refreshToken = await redis.hget('RefreshTokens',idInKey) || ''
+                    const refreshTokenVerificationInfo = await helpers.VerifyTheToken(refreshToken,process.env.REFRESH_TOKEN_SECRET||'')
+                    if(refreshTokenVerificationInfo[0]) return next(new Error('refresh token is already expired'))
+                    else {
+                        const userId = refreshTokenVerificationInfo[1].id.trim()
+                        if((userId === idInKey) && (platformInKey === platform) && (appIdInKey === appId)){
+                            const newAccessToken = helpers.GenerateAccessToken({'id':userId})
+                            // res.cookie('uid',newAccessToken,{signed:true,httpOnly:true,sameSite:'strict',secure:true})
+                            // check the user existence in cache and main db
+                           const isUserExistInCache = await helpers.IsUserExistInCache(redis,mailReceiver.trim())
+                           console.log(isUserExistInCache,'this is what u got')
+                           if(isUserExistInCache){
+                            res.json({
+                                'msg':'now you can write the mail'
+                            })
+                           } else {
+                            // check in main db for user
+                            const isUserExistInDB = await helpers.IsUserExistInDB(Users,mailReceiver.trim())
+                            console.log(isUserExistInDB,'checking the user inside the db')
+                            if(isUserExistInDB){
+                                // then write to the db
+                                res.json({
+                                    'msg':'you can write the mail'
+                                })
+                            } else return next(new Error("receiver is not found in db"))
+                           }
+                        } else return next(new Error('no authenticated user'))
+                    }
+
                 }
-                res.json({
-                    'msg':true
-                })
             }
 
 
         } else return next(new Error('missing info fields'))
-    //     if(mailComposer && mailReceiver && mailTitle && mailSubject && mailBody  && platform && appId && deviceId) {
-    //         const {textContent,files} = mailBody
-    //         console.log(textContent,files)
-    //         // check for the existence of the composer and receiver
-    //         let areUsersValid = false
-    //         const isUsersValid = await new Promise((resolve)=>{
-    //             redis.pipeline().hget('Users',mailComposer).hget('Users',mailReceiver).exec((err,result:any)=>{
-    //                 if(err) return next(err)
-    //                 else {
-    //                     if(result[0][1] && result[1][1]) resolve(true) 
-    //                     else resolve(false)
-    //                 }
-    //             })
-    //         }) 
-    //         if(isUsersValid){
-    //             areUsersValid = true
-    //         } else {
-
-    //         if(isMailComposerValid && isMailReceiverValid){
-    //             areUsersValid = true
-    //         } else areUsersValid = false
-    //         }
-    //         if(areUsersValid) {                 
-    //             res.json({
-    //                 msg:'okay'
-    //             })
-    //         } else return next(new Error('user is not found !'))
-            
-    //     } else {
-    //        return next(new Error('missing info fields'))
-    //     }
     }catch(err:any){
-        if(err)
         return next(new Error(err.message))
     }
 

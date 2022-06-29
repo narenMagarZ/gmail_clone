@@ -1,21 +1,24 @@
 import {createHmac} from 'node:crypto'
 import jwt from 'jsonwebtoken'
 import mongoose from 'mongoose'
+import Redis from 'ioredis'
 interface helpers {
     GenerateSecurePassword:(plainPassword:string)=>void
     GenerateAccessToken:(userInfo:{})=>void
     GenerateAccessTokenKey:(platformId:string,appId:string)=>void,
     GenerateUniqueId:()=>void
-    IsUserValid:(Users:mongoose.Model<any>,gmail:string)=>Promise<boolean>
+    IsUserExistInDB:(Users:mongoose.Model<any>,gmail:string)=>Promise<any>
     VerifyTheToken:(token:string,secretKey:string)=>Promise<[boolean,any]>
+    IsUserExistInCache:(cache:Redis,user:string)=>Promise<any>
 }
 export const helpers : helpers = {
     'GenerateSecurePassword' : ()=>{},
     'GenerateAccessToken' : ()=>{},
     'GenerateAccessTokenKey' : ()=>{},
     'GenerateUniqueId' : ()=>{},
-    'IsUserValid':async()=>false,
-    'VerifyTheToken':async()=>[false,null]
+    'IsUserExistInDB':async()=>false,
+    'VerifyTheToken':async()=>[false,null],
+    'IsUserExistInCache':async()=>null
 }
 
 helpers.GenerateSecurePassword = function(plainPassword:string){
@@ -32,7 +35,7 @@ helpers.GenerateAccessToken = function(userInfo){
 
 
 helpers.GenerateAccessTokenKey = function(platformId:string,appId:string){
-    const accessTokenKey = jwt.sign({'platform':platformId,'appId':appId},process.env.TOKEN_KEY_SECRET || '',{expiresIn:'40000'})
+    const accessTokenKey = jwt.sign({'platform':platformId,'appId':appId},process.env.TOKEN_KEY_SECRET || '',{expiresIn:'30 days'})
     return accessTokenKey
 }
 
@@ -41,10 +44,9 @@ helpers.GenerateUniqueId = function(){
 }
 
 
-helpers.IsUserValid = async function(Users:mongoose.Model<any>,gmail:string){
-    const userInfo = await Users.findOne({'gmail':gmail})
-    if(userInfo) return true
-    else return false
+helpers.IsUserExistInDB = async function(Users:mongoose.Model<any>,gmail:string){
+    return Promise.resolve(Users.findOne({'gmail':gmail}))
+
 }
 
 helpers.VerifyTheToken = function(token:string,secretKey:string){
@@ -55,3 +57,9 @@ helpers.VerifyTheToken = function(token:string,secretKey:string){
         })
     })
 }
+
+
+helpers.IsUserExistInCache = function(cache:Redis,user:string){
+    return Promise.resolve(cache.hget('Users',user))
+}
+
