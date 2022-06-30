@@ -5,6 +5,7 @@ function ComposeMail(){
     const subjectRef = createRef('')
     const receiverRef = createRef('')
     const [mailTitle,setMailTitle] = useState('New Message')
+    const [pickFile,setPickedFile] = useState([null])
     const textContentRef = createRef('')
 
     async function SubmitMail(){
@@ -39,6 +40,47 @@ function ComposeMail(){
         }
  
 
+    }
+    function PickFile(e){
+        const filePicker = document.getElementById('file-picker')
+        if(filePicker){
+            filePicker.addEventListener('change',(e)=>{
+                const pickedFiles = e.target.files
+                const formData = new FormData()
+                for (let i of pickedFiles){
+                    const fileUploadProgressWrapper= document.getElementById('file-upload-progress-wrapper')
+                    if(fileUploadProgressWrapper){
+                        const fileReader = new FileReader()
+                        fileReader.readAsDataURL(i)
+                        fileReader.addEventListener('load',(ev)=>{
+                            console.log(ev.target.result,ev.loaded)
+                            const percent = (ev.loaded / ev.total) * 100
+                            console.log(percent,'finally loaded')
+                        })
+                        fileReader.addEventListener('loadend',(ev)=>{
+                            console.log(ev.loaded,'finally loaded completely')
+                        })
+                        fileReader.addEventListener('loadstart',(ev)=>{
+                            console.log(ev.loaded,'on load start')
+                        })
+                        fileReader.addEventListener('progress',(ev)=>{
+                            console.log(ev.loaded)
+                            const percent = (ev.loaded / ev.total ) *100
+                            console.log(percent,'on progressing')
+                        })
+                        formData.append('files',i)
+                   
+                    }
+                }
+                apiFetcher.post('/test',formData).then(res=>{
+                    console.log(res)
+                }).catch(err=>{
+                    console.log(err)
+                })
+            })
+            filePicker.click()
+
+        }
     }
     return(
         <div style={{
@@ -79,6 +121,11 @@ function ComposeMail(){
                      </div>
                 </div>
              </div>
+             <div id='file-upload-progress-wrapper' style={{
+                'border':'var(--border)',
+             }}>
+
+             </div>
              <div style={{
                 'borderTop':'1px solid #292929',
                 'display':'flex',
@@ -92,7 +139,8 @@ function ComposeMail(){
                 >
                     Send
                 </button>
-                <button style={{
+                <input name='file' type="file" hidden id='file-picker' multiple />
+                <button onClick={PickFile} style={{
                     'margin':'2px'
                 }}>
                     Attach File
