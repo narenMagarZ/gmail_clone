@@ -14,13 +14,17 @@ export const middlewares : middlewares = {
 
 interface requser {
     'user':string | null
+    'newAccessToken' : string | null
 }
 export let reqUserInfo : requser = {
-    'user' : null
+    'user' : null,
+    'newAccessToken' : null
 }
 middlewares.IsUserAuthenticated = async function(req:Request,_res:Response,next:NextFunction){
     reqUserInfo = {
-        'user':null
+        'user':null,
+        'newAccessToken' : null
+
     }
     const secureApiEndPoints = ['/emails','/composemail']
     const parsedURL = url.parse(req.url,true)
@@ -31,14 +35,12 @@ middlewares.IsUserAuthenticated = async function(req:Request,_res:Response,next:
         const appId = req.headers['appid']
         const deviceId = req.headers['deviceid']
         const {uid,uidkey} = req.signedCookies
-        console.log(platform,appId,deviceId,uid,uidkey)
         if(uid && uidkey && platform && appId && deviceId){
             // verify uid and uidkey
             const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || ''
             const tokenSecretKey = process.env.TOKEN_KEY_SECRET || ''
            const tokenVerification = await Promise.all([helpers.VerifyTheToken(uid,accessTokenSecret),helpers.VerifyTheToken(uidkey,tokenSecretKey)])
            let tokenInfoAfterVerification             
-           console.log(tokenVerification)
            if(!tokenVerification[0][0]){
                 if(tokenVerification[0][1] === 'jwt expired' && tokenVerification[1][0]){
                     tokenInfoAfterVerification = {
@@ -76,18 +78,26 @@ middlewares.IsUserAuthenticated = async function(req:Request,_res:Response,next:
                         const refUidFromKey = secretKeyInfo.id
                         const refPlatform = secretKeyInfo.platform
                         const refAppId = secretKeyInfo.appId
-                        const userGmailToken = await redis.hget('RefreshTokens',refUid)
-                        if(userGmailToken){
-                           const gmailIdInfo =  await helpers.VerifyTheToken(userGmailToken,process.env.REFRESH_TOKEN_SECRET||'')
-                           if(gmailIdInfo[0]){
-                                if(refUid === refUidFromKey && refUid === gmailIdInfo[1].id && refPlatform === platform && refAppId === appId) {
-                                    reqUserInfo.user = gmailIdInfo[1].id
+                        const userIdToken = await redis.hget('RefreshTokens',refUid)
+                        if(userIdToken){
+                           const userInfo =  await helpers.VerifyTheToken(userIdToken,process.env.REFRESH_TOKEN_SECRET||'')
+                           if(userInfo[0]){
+                                if(refUid === refUidFromKey && refUid === userInfo[1].id && refPlatform === platform && refAppId === appId) {
+                                    reqUserInfo.user = userInfo[1].id
+                                    reqUserInfo.newAccessToken = null
                                     return next()
                                 } else return next(new Error('invalid user'))
                            } else return next(new Error('invalid user'))
                         } else return next(new Error('invalid user'))
                     } else{
-
+                        // here generate the accesstoken and set it to the cookie
+                        const tokenInfo = {
+                            'id' : secretKeyInfo.id
+                        }
+                        const accessToken = helpers.GenerateAccessToken(tokenInfo)
+                        reqUserInfo.user = secretKeyInfo.id
+                        reqUserInfo.newAccessToken = accessToken
+                        next()
                     }
                 } else return next(new Error('invalid user'))
            } else return next(new Error('invalid user'))

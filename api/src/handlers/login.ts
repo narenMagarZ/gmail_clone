@@ -17,20 +17,20 @@ async function Login(req:Request,res:Response,next:NextFunction){
                 const securedPassword = thatUser[0].password
                 if(securedPassword === hashedPassword){
                     const tokenInfo = {
-                        'id' : thatUser[0].gmail,
+                        'id' : thatUser[0]._id,
                     }
                     const secretKeyInfo = {
                         'platform' : platform,
                         'appId' : appId,
-                        'id' : thatUser[0].gmail
+                        'id' : thatUser[0]._id
                     }
-                    let thatToken = await redis.hget('RefreshTokens',thatUser[0].gmail)
+                    let thatToken = await redis.hget('RefreshTokens',thatUser[0]._id)
                     console.log(thatToken)
                     let refreshToken
                     if(thatToken) refreshToken = thatToken.trim()
                     else { 
                         refreshToken = helpers.GenerateRefreshToken(tokenInfo)
-                        redis.hset('RefreshTokens',thatUser[0].gmail,refreshToken)
+                        redis.hset('RefreshTokens',thatUser[0]._id,refreshToken)
                     }
                     const accessToken = helpers.GenerateAccessToken(tokenInfo)
                     const accessTokenKey = helpers.GenerateAccessTokenKey(secretKeyInfo)

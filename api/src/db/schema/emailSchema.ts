@@ -3,7 +3,7 @@ import { mongodbConnector } from '..'
 
 const emailSchema = new mongoose.Schema({
     mailComposer :{
-        types : mongoose.Schema.Types.ObjectId,
+        type : mongoose.Schema.Types.ObjectId,
         ref : 'Users'
     },
     from :{
@@ -19,28 +19,36 @@ const emailSchema = new mongoose.Schema({
         require:true,
         default:Date.now
     },
+    title:{
+        type:String,
+        require:true
+    },
     body:{
         subject:{
             type:String,
-            default:""
+            require:true
         },
         content:{
             text:{
                 type:String,
-                default:"",
+                require:true        
             },
             files:[{
-                fileId:{
-                    type:String
+                fileName:{
+                    type:String,
+                    require:false
                 },
                 filePath:{
-                    type:String
+                    type:String,
+                    require:false
                 },
                 fileSize:{
-                    type:String
+                    type:String,
+                    require:false
                 },
                 fileType:{
-                    type:String
+                    type:String,
+                    require:false
                 }
             }]
         }

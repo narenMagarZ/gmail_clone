@@ -6,21 +6,12 @@ async function Signup(req:Request,res:Response,next:NextFunction){
     try {
         let {userName,phoneNum,gmailId,password,confirmPassword} = req.body
         if(userName && phoneNum && gmailId && password && confirmPassword){
-            userName = userName.trim()
-            phoneNum = phoneNum.trim()
-            gmailId = gmailId.trim()
-            password = password.trim()
-            confirmPassword = confirmPassword.trim()
             // check if that gmailid is already exist
-            const isUserAlreadyExist = await redis.hget('Users',gmailId)
+            const isUserAlreadyExist = await redis.hget('users',gmailId)
             if(isUserAlreadyExist) return next(new Error('user already exist'))
             else {
                 if(password === confirmPassword){
                     // validate the password , email ,name ,gmail
-                    console.log(helpers.IsGmailIdValid(gmailId))
-                    console.log(helpers.IsPasswordValid(password))
-                    console.log(helpers.IsPhoneNumberValid(phoneNum))
-                    console.log(helpers.IsUserNameValid(userName))
                     if(helpers.IsGmailIdValid(gmailId) && helpers.IsPasswordValid(password) && helpers.IsPhoneNumberValid(phoneNum) && helpers.IsUserNameValid(userName)){
                         const securePassword = helpers.GenerateSecurePassword(password)
                         const userInfoObj = {
@@ -30,9 +21,12 @@ async function Signup(req:Request,res:Response,next:NextFunction){
                             'password' : securePassword
                         }
                         // write user to the database using message broker - in this case we are going to user rabbitmq
-                        const test = await Users.insertMany([userInfoObj])
-                        console.log(test)
-                        res.json({
+                        const user = new Users(userInfoObj)
+                        await user.save()
+                        const  uId = user._id.valueOf()
+                        await redis.hset('users',uId,gmailId)
+                        await redis.hset('users',gmailId,uId)
+                        return res.json({
                             'msg':'successfully created account',
                             'status':true
                         })

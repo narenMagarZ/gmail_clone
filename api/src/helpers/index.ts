@@ -4,8 +4,8 @@ import mongoose from 'mongoose'
 import Redis from 'ioredis'
 interface helpers {
     GenerateSecurePassword:(plainPassword:string)=>string,
-    GenerateAccessToken:(userInfo:{})=>string
-    GenerateRefreshToken:(userInfo:{})=>string
+    GenerateAccessToken:(tokenInfo:{})=>string
+    GenerateRefreshToken:(tokenInfo:{})=>string
     GenerateAccessTokenKey:(secretKeyInfo:{})=>string,
     IsUserExistInDB:(Users:mongoose.Model<any>,gmail:string)=>Promise<any>
     VerifyTheToken:(token:string,secretKey:string)=>Promise<[boolean,any]>

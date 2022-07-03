@@ -10,8 +10,8 @@ async function Email(req:Request,res:Response,next:NextFunction){
         const {user} = reqUserInfo
         if(typeof user === 'string' && typeof id === 'string'){
             if(user === id ){
-               const myMails = await Emails.find({'to':user})
-               console.log(myMails)
+            //    const myMails = await Emails.find({'to':user})
+            //    console.log(myMails)
                return res.json({
                 'msg':'you got your mails'
                })
