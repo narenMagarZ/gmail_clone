@@ -15,15 +15,15 @@ function Login(){
         await require(['platform'], function(platform) {
             platformContent = platform
         });
-        const userLoginInfo = {
-            ...formData,
-            'platformId':platformContent.os.family,
-            'appId':platformContent.name
-        }
+        
         const checkBox = document.getElementById('check-box')
         let activeCheckBox = ''
         let isUserAuthenticated = false
-        apiFetcher.post('/login',userLoginInfo).then(res=>{
+        apiFetcher.post('/login',formData,{'headers':{
+            'platform':platformContent.os.family,
+            'appid':platformContent.name,
+            'deviceid':'browser'
+        }}).then(res=>{
             console.log(res.data.status)
             if(res.data.status === true){
                 checkBox.classList.add('ok-check-box')

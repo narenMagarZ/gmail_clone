@@ -1,16 +1,15 @@
-import {Request,Response} from 'express'
+import {NextFunction, Request,Response} from 'express'
 import { helpers } from '../helpers'
 import {Users} from '../db/schema/userschema'
-import jwt from 'jsonwebtoken'
 import {redis} from '../cacheserver'
-async function Login(req:Request,res:Response){
+async function Login(req:Request,res:Response,next:NextFunction){
     try{
-        let {gmailId,password,platformId,appId} = req.body
-        if(gmailId && password && platformId && appId){
-            gmailId = gmailId.trim()
-            password = password.trim()
-            platformId = platformId.trim()
-            appId = appId.trim()
+        let {gmailId,password} = req.body
+        console.log(req.body,req.headers)
+        const platform = req.headers['platform']
+        const appId = req.headers['appid']
+        const deviceId = req.headers['deviceid']
+        if(gmailId && password && platform && appId && deviceId){
             const hashedPassword = helpers.GenerateSecurePassword(password)
             const thatUser = await Users.find({'gmail':gmailId})
             if(thatUser.length > 0){
@@ -20,54 +19,35 @@ async function Login(req:Request,res:Response){
                     const tokenInfo = {
                         'id' : thatUser[0].gmail,
                     }
-                    const tokenKeyInfo = {
-                        'platform' : platformId,
+                    const secretKeyInfo = {
+                        'platform' : platform,
                         'appId' : appId,
                         'id' : thatUser[0].gmail
                     }
                     let thatToken = await redis.hget('RefreshTokens',thatUser[0].gmail)
                     console.log(thatToken)
                     let refreshToken
-                    if(thatToken && thatToken !== ''){
-                        refreshToken = thatToken.trim()
-                    } else {
-                        refreshToken = jwt.sign(tokenInfo,process.env.REFRESH_TOKEN_SECRET || '',{expiresIn:"30 days"})
+                    if(thatToken) refreshToken = thatToken.trim()
+                    else { 
+                        refreshToken = helpers.GenerateRefreshToken(tokenInfo)
                         redis.hset('RefreshTokens',thatUser[0].gmail,refreshToken)
                     }
-                    const accessToken = jwt.sign(tokenInfo,process.env.ACCESS_TOKEN_SECRET || '',{expiresIn:"2000s"})
-                    const accessTokenKey = jwt.sign(tokenKeyInfo,process.env.TOKEN_KEY_SECRET || '',{expiresIn:'30 days'})
-                    res.cookie('uid',accessToken,{signed:true,httpOnly:true,sameSite:'strict',secure:true})
-                    res.cookie('uidkey',accessTokenKey,{signed:true,httpOnly:true,sameSite:'strict',secure:true})
+                    const accessToken = helpers.GenerateAccessToken(tokenInfo)
+                    const accessTokenKey = helpers.GenerateAccessTokenKey(secretKeyInfo)
+                    res.cookie('uid',accessToken,helpers.SecureCookieProps)
+                    res.cookie('uidkey',accessTokenKey,helpers.SecureCookieProps)
                     res.json({
                         'msg':'you are logged in!',
                         'status':true
                     })
-                } else {
-                    res.json({
-                        'msg':"password does not match!",
-                        'status':false
-                    })
-                }
-            } else {
-                res.json({
-                    'msg':"no such user is found!",
-                    'status':false
-                })
-            }
+                } else return next(new Error('password does not match'))
+            } else return next(new Error('password does not match'))
     
-        } else {
-            res.json({
-                'msg':'missing info fields',
-                'status':false
-            })
-        }
+        } else return next(new Error('missing input fields'))
     }
     catch(err){
-        console.error(err)
-        res.json({
-            'msg':'something wrong happened',
-            'status':false
-        })
+        if(err instanceof TypeError) return next(new Error(err.message))
+        else if(typeof err === 'string') return next(new Error(err))
     }
 
 }

@@ -69,10 +69,10 @@ function ComposeMail(){
                             console.log(percent,'on progressing')
                         })
                         formData.append('files',i)
-                   
+                        
                     }
                 }
-                apiFetcher.post('/test',formData).then(res=>{
+                apiFetcher.post('/test',formData,{headers:{'key':'this is secret key'}}).then(res=>{
                     console.log(res)
                 }).catch(err=>{
                     console.log(err)

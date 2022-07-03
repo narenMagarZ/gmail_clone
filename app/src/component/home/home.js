@@ -15,7 +15,8 @@ function Home(){
                 apiFetcher.get(`/emails?id=${cookie}`,{
                     headers:{
                         'platform':platformContent.os.family,
-                        'appId':platformContent.name
+                        'appId':platformContent.name,
+                        'deviceid' : 'browser'
                     }
                 }).then(res=>{
                     console.log(res)

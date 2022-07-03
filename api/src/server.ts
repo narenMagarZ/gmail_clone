@@ -3,6 +3,7 @@ import cors, { CorsOptions } from 'cors'
 import cookieParser from 'cookie-parser'
 import router from './routes'
 import config from '../config'
+import { middlewares } from './middleware'
 function CreateServer():Application{
     const app = express()
     app.use(express.urlencoded({extended:false})) // it is used to parses the url encoded , having extend as true use the qs library to parse and having false use querystring library
@@ -24,6 +25,9 @@ function CreateServer():Application{
         }
         callback(null,corsOption)
     }))
+
+
+    app.use(middlewares.IsUserAuthenticated)
     app.use('/api',router)
     app.use((err:Error,_req:Request,res:Response,next:NextFunction)=>{
         console.log(err,'this is error')

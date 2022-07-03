@@ -26,7 +26,8 @@ const userSchema = new mongoose.Schema({
     },
     isActive:{
         type:Boolean,
-        require:true
+        require:true,
+        default:false
     },
     loggedInDevices:[{
         deviceId:{

@@ -9,7 +9,9 @@ const storage = multer.diskStorage({
         cb(null,path.join(__dirname,'uploads'))
     },
     filename:function(req,file,cb){
-        cb(null,file.fieldname)
+        console.log(file.originalname,'this is original name of the file')
+        const fileName = file.originalname.toLowerCase().split(' ').join('-')
+        cb(null,fileName)
     }
 })
 
@@ -18,10 +20,20 @@ router.post('/signup',handlers.Signup)
 router.post('/login',handlers.Login)
 router.get('/emails',handlers.Email)
 router.post('/composemail',handlers.ComposeMail)
-router.post('/test',upload.array('file'),(req,res)=>{
+router.post('/test',(req,res,next)=>{
+    console.log(req.body)
+    if(req.headers['key'] === 'this is secret key'){
+        next()
+        // res.json({'msg':'done'})
+    } else return res.json({
+        msg:'not authenticated user'
+    })
+}
+,upload.array('files'),(req,res)=>{
     console.log(req.files)
     res.json({
         'msg':'done'
     })
-})
+}
+)
 export default router
