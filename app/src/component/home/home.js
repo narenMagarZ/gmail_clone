@@ -7,12 +7,12 @@ function Home(){
     useEffect(()=>{
         async function fun(){
             let platformContent
-                console.log(document.cookie)
-                const cookie = 'naren@gmail.com'
                 await require(['platform'], function(platform) {
                     platformContent = platform
                 });
-                apiFetcher.get(`/emails?id=${cookie}`,{
+                let clientCookie = document.cookie
+                const userGmailId = clientCookie.split('=')[1] + '@gmail.com'
+                apiFetcher.get(`/emails?id=${userGmailId}`,{
                     headers:{
                         'platform':platformContent.os.family,
                         'appId':platformContent.name,

@@ -1,17 +1,25 @@
+import {Request} from 'express'
 import multer from 'multer'
 import path from 'node:path'
 import {v4 as uuidv4} from 'uuid'
-const destination = function(req:any,file:Express.Multer.File,cb:(err:Error|null,destination:string)=>void){
-    // req.user = 'naren@gmail.com'
-    const userName = req.user.split('@gmail.com')[0]
-    const userDir = path.resolve(__dirname,'../','./useruploads',`./${userName}`)
-    console.log(userDir)
-    cb(null,userDir)
+import { reqUserInfo } from '../middleware'
+import fs from 'node:fs'
+const destination = function(_req:Request,_file:Express.Multer.File,cb:(err:Error|null,destination:string)=>void){
+    const {user} = reqUserInfo
+    if(user){
+        const pathToFileUploadDirOfEachUser = path.resolve(__dirname,'../','./fileuploads','./',user)
+        fs.mkdir(pathToFileUploadDirOfEachUser,()=>{
+            cb(null,pathToFileUploadDirOfEachUser)
+        })
+    }
 }
 
-const filename = function(req:any,file:Express.Multer.File,cb:(err:Error|null,filename:string)=>void){
+const filename = function(_req:Request,file:Express.Multer.File,cb:(err:Error|null,filename:string)=>void){
     const fileName = uuidv4()+file.originalname.toLowerCase().split(' ').join('-')
     cb(null,fileName)
-
 }
-export const fileUploadHandler = multer.diskStorage({destination,filename})
+
+
+const fileStorage = multer.diskStorage({destination,filename})
+
+export const fileUploader = multer({storage:fileStorage})

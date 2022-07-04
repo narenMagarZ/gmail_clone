@@ -1,4 +1,4 @@
-import {createRef, useState} from 'react'
+import {createRef, useRef, useState} from 'react'
 import './index.css'
 import {apiFetcher} from '../../baseurl'
 function ComposeMail(){
@@ -7,7 +7,7 @@ function ComposeMail(){
     const [mailTitle,setMailTitle] = useState('New Message')
     const [pickFile,setPickedFile] = useState([null])
     const textContentRef = createRef('')
-
+    const formData = new FormData()
     async function SubmitMail(){
         try{
             console.log(subjectRef.current.value)
@@ -26,7 +26,9 @@ function ComposeMail(){
             await require(['platform'], function(platform) {
                 platformContent = platform
             });
-            const response = await apiFetcher.post('/composemail',mailContent,{
+            if(formData.get('body')) formData.delete('body')
+            formData.append('body',JSON.stringify(mailContent))
+            const response = await apiFetcher.post('/composemail',formData,{
                 headers:{
                     'platform':platformContent.os.family,
                     'appid':platformContent.name,
@@ -44,9 +46,9 @@ function ComposeMail(){
     function PickFile(e){
         const filePicker = document.getElementById('file-picker')
         if(filePicker){
+            if(formData.getAll('files').length > 0) formData.delete('files')
             filePicker.addEventListener('change',(e)=>{
                 const pickedFiles = e.target.files
-                const formData = new FormData()
                 for (let i of pickedFiles){
                     const fileUploadProgressWrapper= document.getElementById('file-upload-progress-wrapper')
                     if(fileUploadProgressWrapper){
@@ -68,15 +70,9 @@ function ComposeMail(){
                             const percent = (ev.loaded / ev.total ) *100
                             console.log(percent,'on progressing')
                         })
-                        formData.append('files',i)
-                        
+                        formData.append('files',i) 
                     }
                 }
-                apiFetcher.post('/test',formData,{headers:{'key':'this is secret key'}}).then(res=>{
-                    console.log(res)
-                }).catch(err=>{
-                    console.log(err)
-                })
             })
             filePicker.click()
 

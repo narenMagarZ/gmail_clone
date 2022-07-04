@@ -71,8 +71,8 @@ middlewares.IsUserAuthenticated = async function(req:Request,_res:Response,next:
             }
            }
            if(!tokenInfoAfterVerification.isError){
-                if(tokenInfoAfterVerification.tokenInfo){
-                    const {accessTokenInfo,secretKeyInfo} = tokenInfoAfterVerification.tokenInfo
+               if(tokenInfoAfterVerification.tokenInfo){
+                   const {accessTokenInfo,secretKeyInfo} = tokenInfoAfterVerification.tokenInfo
                     if(accessTokenInfo && secretKeyInfo){
                         const refUid = accessTokenInfo.id
                         const refUidFromKey = secretKeyInfo.id

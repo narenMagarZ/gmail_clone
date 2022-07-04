@@ -2,6 +2,7 @@ import {createHmac} from 'node:crypto'
 import jwt from 'jsonwebtoken'
 import mongoose from 'mongoose'
 import Redis from 'ioredis'
+import { NextFunction,Request,Response } from 'express'
 interface helpers {
     GenerateSecurePassword:(plainPassword:string)=>string,
     GenerateAccessToken:(tokenInfo:{})=>string
@@ -15,6 +16,7 @@ interface helpers {
     IsPasswordValid:(password:string)=>boolean
     IsGmailIdValid:(gmailId:string)=>boolean
     SecureCookieProps:{}
+    CatchFiles:(req:Request,res:Response,next:NextFunction)=>void
 
 }
 export const helpers : helpers = {
@@ -29,7 +31,8 @@ export const helpers : helpers = {
     'IsUserNameValid':()=>false,
     'IsPasswordValid':()=>false,
     'IsGmailIdValid':()=>false,
-    'SecureCookieProps':{signed:true,httpOnly:true,sameSite:'strict',secure:true}
+    'SecureCookieProps':{signed:true,httpOnly:true,sameSite:'strict',secure:true},
+    'CatchFiles':()=>{}
 
 }
 
@@ -100,3 +103,20 @@ helpers.IsGmailIdValid = function(gmailId){
     else return false
 }
 
+interface reqbodyinfo {
+    'body':any
+    'files':any
+}
+export let reqBodyInfo : reqbodyinfo = {
+    'body':null,
+    'files':null
+}
+helpers.CatchFiles = function(req,_res,next){
+    reqBodyInfo = {
+        'body' : null,
+        'files' : null
+    }
+    reqBodyInfo.body = req.body
+    reqBodyInfo.files = req.files
+    next()
+}

@@ -36,6 +36,8 @@ async function Login(req:Request,res:Response,next:NextFunction){
                     const accessTokenKey = helpers.GenerateAccessTokenKey(secretKeyInfo)
                     res.cookie('uid',accessToken,helpers.SecureCookieProps)
                     res.cookie('uidkey',accessTokenKey,helpers.SecureCookieProps)
+                    const extractGmailId = gmailId.split('@')[0]
+                    res.cookie('gmailid',extractGmailId)
                     res.json({
                         'msg':'you are logged in!',
                         'status':true
