@@ -10,9 +10,6 @@ function ComposeMail(){
     const formData = new FormData()
     async function SubmitMail(){
         try{
-            console.log(subjectRef.current.value)
-            console.log(receiverRef.current.value.length)
-            console.log(textContentRef.current.value)
             const mailContent = {
                 'mailReceiver' : receiverRef.current.value.trim(),
                 'mailTitle' : subjectRef.current.value.trim(),
@@ -44,38 +41,39 @@ function ComposeMail(){
 
     }
     function PickFile(e){
-        const filePicker = document.getElementById('file-picker')
+        let filePicker = document.getElementById('file-picker')
         if(filePicker){
             if(formData.getAll('files').length > 0) formData.delete('files')
-            filePicker.addEventListener('change',(e)=>{
-                const pickedFiles = e.target.files
-                for (let i of pickedFiles){
-                    const fileUploadProgressWrapper= document.getElementById('file-upload-progress-wrapper')
-                    if(fileUploadProgressWrapper){
-                        const fileReader = new FileReader()
-                        fileReader.readAsDataURL(i)
-                        fileReader.addEventListener('load',(ev)=>{
-                            console.log(ev.target.result,ev.loaded)
-                            const percent = (ev.loaded / ev.total) * 100
-                            console.log(percent,'finally loaded')
-                        })
-                        fileReader.addEventListener('loadend',(ev)=>{
-                            console.log(ev.loaded,'finally loaded completely')
-                        })
-                        fileReader.addEventListener('loadstart',(ev)=>{
-                            console.log(ev.loaded,'on load start')
-                        })
-                        fileReader.addEventListener('progress',(ev)=>{
-                            console.log(ev.loaded)
-                            const percent = (ev.loaded / ev.total ) *100
-                            console.log(percent,'on progressing')
-                        })
-                        formData.append('files',i) 
+            filePicker.addEventListener('change',AttachFileToUploader)
+            function AttachFileToUploader(e){
+                    const pickedFiles = e.target.files
+                    for (let i of pickedFiles){
+                        // const fileUploadProgressWrapper= document.getElementById('file-upload-progress-wrapper')
+                        // if(fileUploadProgressWrapper){
+                        //     const fileReader = new FileReader()
+                        //     fileReader.readAsDataURL(i)
+                        //     fileReader.addEventListener('load',(ev)=>{
+                        //         console.log(ev.target.result,ev.loaded)
+                        //         const percent = (ev.loaded / ev.total) * 100
+                        //         console.log(percent,'finally loaded')
+                        //     })
+                        //     fileReader.addEventListener('loadend',(ev)=>{
+                        //         console.log(ev.loaded,'finally loaded completely')
+                        //     })
+                        //     fileReader.addEventListener('loadstart',(ev)=>{
+                        //         console.log(ev.loaded,'on load start')
+                        //     })
+                        //     fileReader.addEventListener('progress',(ev)=>{
+                        //         console.log(ev.loaded)
+                        //         const percent = (ev.loaded / ev.total ) *100
+                        //         console.log(percent,'on progressing')
+                        //     })
+                        // }
+                            formData.append('files',i) 
                     }
-                }
-            })
+                    filePicker.removeEventListener('change',AttachFileToUploader)
+            }
             filePicker.click()
-
         }
     }
     return(
