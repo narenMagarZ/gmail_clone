@@ -24,7 +24,6 @@ middlewares.IsUserAuthenticated = async function(req:Request,_res:Response,next:
     reqUserInfo = {
         'user':null,
         'newAccessToken' : null
-
     }
     const secureApiEndPoints = ['/emails','/composemail']
     const parsedURL = url.parse(req.url,true)

@@ -40,6 +40,46 @@ function ComposeMail(){
  
 
     }
+    function CalculateFileSize(sizeInByte){
+        const sizeType = ['kb','mb','gb']
+        let i = 0
+        let actualFileSize 
+        while(true){
+            if( i === 0 && sizeInByte < 1024){
+                actualFileSize = sizeInByte + ' byte'
+                break
+            } 
+            sizeInByte = Math.ceil(sizeInByte / 1024)
+            if(sizeInByte < 1024 ){
+                actualFileSize = sizeInByte + ' ' + sizeType[i]
+                break
+            }
+            i++
+       
+        } 
+        return actualFileSize
+
+    }
+    function RemoveFileFromList(ev){
+        const itsParent = ev.target.parentElement
+        const grandParent = itsParent.parentElement
+        if(grandParent){
+            const itsParentId = itsParent.dataset.id
+            const tempFormData = formData.getAll('files')
+            formData.delete('files')
+            tempFormData.splice(itsParentId,1)
+            for(let i = 0 ; i < tempFormData.length ; i++){
+                formData.append('files',tempFormData[i])
+            }
+            let j = 0
+            grandParent.removeChild(itsParent)
+            // this can reset the data-id 
+            for(let fileWrapper of grandParent.children){
+                fileWrapper.setAttribute('data-id',j++)
+                
+            }    
+        }
+    }
     function PickFile(e){
         let filePicker = document.getElementById('file-picker')
         if(filePicker){
@@ -47,29 +87,30 @@ function ComposeMail(){
             filePicker.addEventListener('change',AttachFileToUploader)
             function AttachFileToUploader(e){
                     const pickedFiles = e.target.files
-                    for (let i of pickedFiles){
-                        // const fileUploadProgressWrapper= document.getElementById('file-upload-progress-wrapper')
-                        // if(fileUploadProgressWrapper){
-                        //     const fileReader = new FileReader()
-                        //     fileReader.readAsDataURL(i)
-                        //     fileReader.addEventListener('load',(ev)=>{
-                        //         console.log(ev.target.result,ev.loaded)
-                        //         const percent = (ev.loaded / ev.total) * 100
-                        //         console.log(percent,'finally loaded')
-                        //     })
-                        //     fileReader.addEventListener('loadend',(ev)=>{
-                        //         console.log(ev.loaded,'finally loaded completely')
-                        //     })
-                        //     fileReader.addEventListener('loadstart',(ev)=>{
-                        //         console.log(ev.loaded,'on load start')
-                        //     })
-                        //     fileReader.addEventListener('progress',(ev)=>{
-                        //         console.log(ev.loaded)
-                        //         const percent = (ev.loaded / ev.total ) *100
-                        //         console.log(percent,'on progressing')
-                        //     })
-                        // }
-                            formData.append('files',i) 
+                    const fileUploadDisplayWrapper = document.getElementById('file-upload-display-wrapper')
+                    let i = 0
+                    for (let file of pickedFiles){
+                            const fileWrapper = document.createElement('div')
+                            fileWrapper.setAttribute('id','file-wrapper')
+                            const fileName = document.createElement('span')
+                            const fileSize = document.createElement('span')
+                            const fileRemover = document.createElement('button')
+                            fileRemover.style = "float:right;border:none;background:transparent:outline:none;border-radius:4px;"
+                            fileRemover.innerHTML = "❌"
+                            fileSize.innerText = '(' + CalculateFileSize(file.size) + ')'
+                            fileName.innerText = file.name 
+                            fileRemover.addEventListener('click',RemoveFileFromList)
+                            fileWrapper.append(fileName)
+                            fileWrapper.append(fileSize)
+                            fileWrapper.append(fileRemover)
+                            fileWrapper.setAttribute('data-id',i++)
+                            fileUploadDisplayWrapper.append(fileWrapper)
+                            const fileReader = new FileReader()
+                            fileReader.readAsDataURL(file)
+                            fileReader.onloadend = function(ev){
+                                fileName.style.color = "#0000ff"
+                            }
+                            formData.append('files',file) 
                     }
                     filePicker.removeEventListener('change',AttachFileToUploader)
             }
@@ -98,6 +139,8 @@ function ComposeMail(){
              <div style={{
                 'padding':'4px 8px',
                 'flex':'2',
+                'height':'auto',
+                'overflow':'scroll'
              }}>
                 <div id='title-wrapper' style={{
                     'width':'100%',
@@ -107,23 +150,28 @@ function ComposeMail(){
                 <div id='subject-wrapper'>
                     <input placeholder='Subject' ref={subjectRef} />
                 </div>
-                <div className='cmp-mail-body-wrapper'>
+                <div style={{
+                    'border':'2px solid red'
+                }} className='cmp-mail-body-wrapper'>
                      <div id='cmp-mail-in-wrapper'>
                         <div id='cmp-mail-text-wrapper'>
                             <textarea ref={textContentRef}></textarea>
                         </div>
                      </div>
                 </div>
-             </div>
-             <div id='file-upload-progress-wrapper' style={{
+             <div id='file-upload-display-wrapper' style={{
                 'border':'var(--border)',
+                'display':'flex',
+                'flexDirection':'column',
+                'alignItems':'flex-start',
+                'overflowY':'scroll',
+                'height':'auto',
              }}>
-
+             </div>
              </div>
              <div style={{
                 'borderTop':'1px solid #292929',
                 'display':'flex',
-                'alignItems':'center',
                 'height':'auto'
              }}>
                 <button style={{

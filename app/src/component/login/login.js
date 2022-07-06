@@ -2,7 +2,7 @@ import {useEffect, useRef, useState} from 'react'
 import './login.css'
 import { apiFetcher } from '../baseurl'
 import { useNavigate } from 'react-router-dom'
-function Login(){
+function Login({isAuthenticated}){
     const navigator = useNavigate()
     const keyUpTimer = useRef(null)
     const [formData,setFormData] = useState({
@@ -42,6 +42,7 @@ function Login(){
             if(checkBox)
             checkBox.classList.remove(activeCheckBox)
             if(isUserAuthenticated){
+                document.cookie = "isAuthenticated=true"
                 // window.location.replace('http://localhost:3000/') // it prevent the go back to the previous page
                 // window.location.href = "http://localhost:3000/" //  it does not 
                 navigator('/',{replace:true}) //  here using replace true can prevent the page from go back to the previous page
@@ -73,6 +74,7 @@ function Login(){
             }
         })
     },[])
+    if(!isAuthenticated)
     return (
         <div className='login'>
               <form onSubmit={LoginForm} id='login-form'>
@@ -95,6 +97,7 @@ function Login(){
                 </form>
         </div>
     )
+    else return window.location.replace('/')
 }
 
 export default Login

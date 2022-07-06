@@ -2,8 +2,8 @@ import { useEffect } from "react";
 import './home.css'
 import { apiFetcher } from "../baseurl";
 import ComposeMail from "./ composemail";
-function Home(){
-
+function Home({isAuthenticated}){
+    console.log('done myan')
     useEffect(()=>{
         async function fun(){
             let platformContent
@@ -24,10 +24,12 @@ function Home(){
         }
         fun()
     })
+    if(isAuthenticated)
     return(
         <div className="home-wrapper">
             <ComposeMail />
         </div>
     )
+    else return window.location.replace('/login')
 }
 export default Home

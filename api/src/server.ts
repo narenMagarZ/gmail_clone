@@ -1,14 +1,15 @@
-import express, { Application, NextFunction , Request, Response } from 'express'
+import express, { NextFunction , Request, Response } from 'express'
 import cors, { CorsOptions } from 'cors'
 import cookieParser from 'cookie-parser'
 import router from './routes'
 import config from '../config'
 import { middlewares } from './middleware'
-function CreateServer():Application{
+function BuildServer(){
     const app = express()
     app.use(express.urlencoded({extended:true})) // it is used to parses the url encoded , having extend as true use the qs library to parse and having false use querystring library
     app.use(express.json())
     app.use(cookieParser(process.env.COOKIE_SECRET))
+    app.set('trust proxy',1)
     const whiteList = ['http://localhost:3000','https://localhost:3000']
     app.use(cors((req,callback)=>{
         let corsOption : CorsOptions
@@ -43,7 +44,6 @@ function CreateServer():Application{
     // process.on('unhandledRejection',(rejection)=>{
     //     console.error(rejection)
     // })
-    return app
 }
 
-CreateServer()
+BuildServer()

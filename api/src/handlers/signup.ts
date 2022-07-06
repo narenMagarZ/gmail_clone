@@ -2,9 +2,15 @@ import {NextFunction, Request,Response} from 'express'
 import { redis } from '../cacheserver'
 import {Users} from '../db/schema/userschema'
 import { helpers } from '../helpers'
+import joi from 'joi'
 async function Signup(req:Request,res:Response,next:NextFunction){
     try {
         let {userName,phoneNum,gmailId,password,confirmPassword} = req.body
+        const schema = joi.object({
+            userName:joi.string().min(3).max(20).required(),
+            phoneNum:joi.string().equal(10).required(),
+            gmailId:joi.string()
+        })
         if(userName && phoneNum && gmailId && password && confirmPassword){
             // check if that gmailid is already exist
             const isUserAlreadyExist = await redis.hget('users',gmailId)

@@ -23,7 +23,6 @@ async function ComposeMail(req:Request,res:Response,next:NextFunction){
                 }>[] = [{}]
                 if(req.files instanceof Array){
                     for(let fileIndex = 0 ; fileIndex < req.files?.length ; fileIndex++){
-                        console.log(req.files[fileIndex])
                         const tempFileInfo = req.files[fileIndex]
                         let fileSize = tempFileInfo.size
                         let actualFileSize = fileSize + ' ' + 'byte'

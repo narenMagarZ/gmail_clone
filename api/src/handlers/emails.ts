@@ -10,6 +10,7 @@ async function Email(req:Request,res:Response,next:NextFunction){
         const {user,newAccessToken} = reqUserInfo
         if(user && id){
             const myId = await redis.hget('users',user)
+            console.log(myId,id)
             if(myId && myId === id){
                 const myMails = await Emails.find({'to':myId})
                    console.log(myMails)
