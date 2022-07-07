@@ -149,7 +149,6 @@ function ComposeMail(){
                     <input placeholder='Subject' ref={subjectRef} />
                 </div>
                 <div style={{
-                    'border':'2px solid red'
                 }} className='cmp-mail-body-wrapper'>
                      <div id='cmp-mail-in-wrapper'>
                         <div id='cmp-mail-text-wrapper'>
@@ -158,7 +157,6 @@ function ComposeMail(){
                      </div>
                 </div>
              <div id='file-upload-display-wrapper' style={{
-                'border':'var(--border)',
                 'display':'flex',
                 'flexDirection':'column',
                 'alignItems':'flex-start',

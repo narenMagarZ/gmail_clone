@@ -5,6 +5,7 @@
 }
 .mail-display-wrapper{
     border: var(--border);
+    border-radius: 4px;
     padding: 4px;
     width: 50%;
 }
@@ -25,13 +26,16 @@
     border-radius: 4px;
     display: flex;
     align-items: center;
+    cursor: pointer;
 }
 #mail-text-content-wrapper{
-    border: var(--border);
     padding: 4px;
+    text-overflow: ellipsis;
     display: flex;
+    max-width: 500px;
     flex-direction: column;
-    flex: 2;
+    margin: 0 6px;
+    flex: 5;
 }
 #mail-text-content-wrapper > span:first-child{
     font-weight: bold;
@@ -42,4 +46,11 @@
 }
 #empty-span-2{
     flex: 5;
+}
+#mail-file-wrapper{
+    border-radius: 8px;
+    background-color: #d1d1d1;
+    margin: 8px 0;
+    padding: 4px;
+    color: #1a1a1a;
 }
