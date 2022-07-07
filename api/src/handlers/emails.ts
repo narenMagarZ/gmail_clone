@@ -10,7 +10,7 @@ async function Email(req:Request,res:Response,next:NextFunction){
         if(user && id){
             const myId = await redis.hget('users',user)
             if(myId && myId === id){
-                const fetchMails = await Emails.find({'to':myId}).select({'body':1,'from':1,'to':1,'title':1,'_id':0})
+                const fetchMails = await Emails.find({'to':myId}).select({'body':1,'from':1,'to':1,'title':1,'_id':0,'createdAt':1})
                 let composerId = null
                 if(fetchMails.length > 1){
                     composerId = fetchMails[0].from
@@ -19,11 +19,14 @@ async function Email(req:Request,res:Response,next:NextFunction){
                 const composerGmailid = await redis.hget('users',composerId)
                 let myMails = []
                 for(let i of fetchMails){
+                    console.log(i.body.content.files)
                     myMails.push({
                         'composer':composerGmailid,
                         'receiver':i.to,
                         'title':i.title,
-                        'body':i.body
+                        'body':i.body,
+                        'createdAt':i.createdAt
+
                     })
                 }
                 const myMailRes = {
