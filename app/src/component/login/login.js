@@ -2,7 +2,8 @@ import {useEffect, useRef, useState} from 'react'
 import './login.css'
 import { apiFetcher } from '../baseurl'
 import { useNavigate } from 'react-router-dom'
-function Login({isAuthenticated}){
+function Login(){
+    
     const navigator = useNavigate()
     const keyUpTimer = useRef(null)
     const [formData,setFormData] = useState({
@@ -74,8 +75,7 @@ function Login({isAuthenticated}){
             }
         })
     },[])
-    if(!isAuthenticated)
-    return (
+    return(
         <div className='login'>
               <form onSubmit={LoginForm} id='login-form'>
                 <div>
@@ -97,7 +97,6 @@ function Login({isAuthenticated}){
                 </form>
         </div>
     )
-    else return window.location.replace('/')
 }
 
 export default Login

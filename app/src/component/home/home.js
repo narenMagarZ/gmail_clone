@@ -2,16 +2,18 @@ import { useEffect } from "react";
 import './home.css'
 import { apiFetcher } from "../baseurl";
 import ComposeMail from "./ composemail";
-function Home({isAuthenticated}){
-    console.log('done myan')
+import { utils } from "../../utils";
+function Home(){
     useEffect(()=>{
         async function fun(){
             let platformContent
                 await require(['platform'], function(platform) {
                     platformContent = platform
                 });
-                let clientCookie = document.cookie
-                const userGmailId = clientCookie.split('=')[1] + '@gmail.com'
+                let cookie = document.cookie
+                const {user} = utils.parseCookie(cookie)
+                const userGmailId = user +  '@gmail.com'
+                console.log(userGmailId)
                 apiFetcher.get(`/emails?id=${userGmailId}`,{
                     headers:{
                         'platform':platformContent.os.family,
@@ -24,12 +26,10 @@ function Home({isAuthenticated}){
         }
         fun()
     })
-    if(isAuthenticated)
     return(
         <div className="home-wrapper">
             <ComposeMail />
         </div>
     )
-    else return window.location.replace('/login')
 }
 export default Home
