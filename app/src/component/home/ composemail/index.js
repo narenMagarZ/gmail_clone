@@ -1,11 +1,9 @@
-import {createRef, useRef, useState} from 'react'
+import {createRef} from 'react'
 import './index.css'
 import {apiFetcher} from '../../baseurl'
 function ComposeMail(){
     const subjectRef = createRef('')
     const receiverRef = createRef('')
-    const [mailTitle,setMailTitle] = useState('New Message')
-    const [pickFile,setPickedFile] = useState([null])
     const textContentRef = createRef('')
     const formData = new FormData()
     async function SubmitMail(){
@@ -134,7 +132,7 @@ function ComposeMail(){
                 'border':'none',
                 'borderBottom':'1px solid #292929'
              }} >
-                {mailTitle}
+                New Message
              </div>
              <div style={{
                 'padding':'4px 8px',

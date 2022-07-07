@@ -5,19 +5,33 @@ import {helpers} from '../helpers'
 import {reqUserInfo} from '../middleware'
 async function Email(req:Request,res:Response,next:NextFunction){
     try{
-        console.log(reqUserInfo,'this is requserinfo')
         const {id} = req.query
         const {user,newAccessToken} = reqUserInfo
         if(user && id){
             const myId = await redis.hget('users',user)
-            console.log(myId,id)
             if(myId && myId === id){
-                const myMails = await Emails.find({'to':myId})
-                   console.log(myMails)
-                   if(newAccessToken) res.cookie('uid',newAccessToken,helpers.SecureCookieProps)
-                return res.json({
-                    'msg':'you got your mails'
-                })
+                const fetchMails = await Emails.find({'to':myId}).select({'body':1,'from':1,'to':1,'title':1,'_id':0})
+                let composerId = null
+                if(fetchMails.length > 1){
+                    composerId = fetchMails[0].from
+                }
+                if(newAccessToken) res.cookie('uid',newAccessToken,helpers.SecureCookieProps)
+                const composerGmailid = await redis.hget('users',composerId)
+                let myMails = []
+                for(let i of fetchMails){
+                    myMails.push({
+                        'composer':composerGmailid,
+                        'receiver':i.to,
+                        'title':i.title,
+                        'body':i.body
+                    })
+                }
+                const myMailRes = {
+                    'status':200,
+                    'success':true,
+                    'msg':myMails
+                }
+                return res.json(myMailRes)
             } else return next(new Error("invalid user"))
             
         } else return next(new Error('missing info fields'))

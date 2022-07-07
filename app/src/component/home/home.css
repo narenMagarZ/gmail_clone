@@ -3,3 +3,43 @@
     width: 100%;
     position: fixed;
 }
+.mail-display-wrapper{
+    border: var(--border);
+    padding: 4px;
+    width: 50%;
+}
+.mail-list-wrapper{
+    display: flex;
+    flex-direction: column;
+}
+#user-thumbnail{
+    padding: 20px;
+    border-radius: 20px;
+    background-color: #d1d1d1;
+
+}
+.mail-content-wrapper{
+    border: var(--border);
+    margin: 4px;
+    padding: 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+}
+#mail-text-content-wrapper{
+    border: var(--border);
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    flex: 2;
+}
+#mail-text-content-wrapper > span:first-child{
+    font-weight: bold;
+
+}
+#empty-span-1{
+    flex: 1;
+}
+#empty-span-2{
+    flex: 5;
+}

@@ -7,7 +7,6 @@ import {Emails} from '../db/schema/emailSchema'
 async function ComposeMail(req:Request,res:Response,next:NextFunction){
     try{
         const reqbodyContent = JSON.parse(req.body.body)
-        console.log(req.files,'these are files')
         const {mailReceiver,mailTitle,mailSubject,mailBody} = reqbodyContent 
         const {user,newAccessToken} = reqUserInfo
         if(user && mailReceiver && mailTitle && mailSubject && mailBody) {
@@ -61,7 +60,6 @@ async function ComposeMail(req:Request,res:Response,next:NextFunction){
                 }
                 const email = new Emails(emailInfo)
                 await email.save()
-                console.log(email)
                 if(newAccessToken) res.cookie('uid',newAccessToken,helpers.SecureCookieProps)
                 return res.json({
                     'msg':'ok '

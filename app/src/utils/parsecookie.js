@@ -10,6 +10,5 @@ export function ParseCookie(cookie){
         cookies[cookieKey] = cookieValue
       }
     }
-    console.log(cookies)
     return cookies
 }

@@ -5,7 +5,6 @@ import {redis} from '../cacheserver'
 async function Login(req:Request,res:Response,next:NextFunction){
     try{
         let {gmailId,password} = req.body
-        console.log(req.body,req.headers)
         const platform = req.headers['platform']
         const appId = req.headers['appid']
         const deviceId = req.headers['deviceid']
@@ -13,7 +12,6 @@ async function Login(req:Request,res:Response,next:NextFunction){
             const hashedPassword = helpers.GenerateSecurePassword(password)
             const thatUser = await Users.find({'gmail':gmailId})
             if(thatUser.length > 0){
-                console.log(thatUser[0])
                 const securedPassword = thatUser[0].password
                 if(securedPassword === hashedPassword){
                     const tokenInfo = {
@@ -25,7 +23,6 @@ async function Login(req:Request,res:Response,next:NextFunction){
                         'id' : thatUser[0]._id
                     }
                     let thatToken = await redis.hget('RefreshTokens',thatUser[0]._id)
-                    console.log(thatToken)
                     let refreshToken
                     if(thatToken) refreshToken = thatToken.trim()
                     else { 
