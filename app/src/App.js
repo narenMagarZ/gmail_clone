@@ -13,12 +13,12 @@ export const UserAuthentication = createContext()
 function App() {
   const [isUserAuthenticated,setAuthenticationOfUser] = useState(null)
   function CheckForUserAuthentication(){
-    const cookie = document.cookie
-    const {isAuthenticated} = utils.parseCookie(cookie)
-    setAuthenticationOfUser(()=>isAuthenticated)
+      const cookie = document.cookie
+      const {isAuthenticated} = utils.parseCookie(cookie)
+      setAuthenticationOfUser(()=>isAuthenticated)
   }
   useEffect(CheckForUserAuthentication,[isUserAuthenticated])
-  if(isUserAuthenticated !==null)
+  if(isUserAuthenticated !==null || typeof isUserAuthenticated !== 'undefined')
   return (
     <div>
       <UserAuthentication.Provider value={isUserAuthenticated}>
@@ -47,7 +47,7 @@ function App() {
     </Router>
       </UserAuthentication.Provider>
     </div>
-  );
-}
+  ) 
+    }
 
 export default App;

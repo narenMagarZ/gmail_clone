@@ -11,8 +11,8 @@ function Home(){
                     platformContent = platform
                 });
                 let cookie = document.cookie
-                const {user} = utils.parseCookie(cookie)
-                const userGmailId = user +  '@gmail.com'
+                const {gmailid} = utils.parseCookie(cookie)
+                const userGmailId = gmailid +  '@gmail.com'
                 console.log(userGmailId)
                 apiFetcher.get(`/emails?id=${userGmailId}`,{
                     headers:{
