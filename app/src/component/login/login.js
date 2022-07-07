@@ -43,7 +43,6 @@ function Login(){
             if(checkBox)
             checkBox.classList.remove(activeCheckBox)
             if(isUserAuthenticated){
-                document.cookie = "isAuthenticated=true"
                 // window.location.replace('http://localhost:3000/') // it prevent the go back to the previous page
                 // window.location.href = "http://localhost:3000/" //  it does not 
                 navigator('/',{replace:true}) //  here using replace true can prevent the page from go back to the previous page

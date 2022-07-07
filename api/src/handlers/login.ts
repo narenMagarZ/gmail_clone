@@ -38,6 +38,7 @@ async function Login(req:Request,res:Response,next:NextFunction){
                     res.cookie('uidkey',accessTokenKey,helpers.SecureCookieProps)
                     const extractGmailId = gmailId.split('@')[0]
                     res.cookie('gmailid',extractGmailId)
+                    res.cookie('isAuthenticated',true)
                     res.json({
                         'msg':'you are logged in!',
                         'status':true
